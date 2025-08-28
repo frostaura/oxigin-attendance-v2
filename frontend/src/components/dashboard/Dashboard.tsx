@@ -28,17 +28,29 @@ import {
   PlayIcon,
   StopIcon,
   ClockIcon,
-  CalendarIcon
+  CalendarIcon,
+  useToast,
+  SkeletonDashboard,
 } from '../../ui';
 
 const Dashboard: React.FC = () => {
   const [clockOutDialog, setClockOutDialog] = useState(false);
   const [notes, setNotes] = useState('');
   const [breakTime, setBreakTime] = useState('');
+  const [currentTime, setCurrentTime] = useState(new Date());
   
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const { currentTimeEntry, loading, error } = useAppSelector((state) => state.timeEntry);
+  const { addToast } = useToast();
+
+  // Update current time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const loadCurrentTimeEntry = async () => {
@@ -67,8 +79,21 @@ const Dashboard: React.FC = () => {
       
       dispatch(setCurrentTimeEntry(timeEntry));
       dispatch(addTimeEntry(timeEntry));
+      
+      // Show success toast
+      addToast({
+        variant: 'success',
+        title: 'Clocked In',
+        description: `Successfully clocked in at ${formatTime(new Date())}`,
+      });
     } catch (error: any) {
-      dispatch(setError(error.response?.data?.message || 'Failed to clock in'));
+      const message = error.response?.data?.message || 'Failed to clock in';
+      dispatch(setError(message));
+      addToast({
+        variant: 'error',
+        title: 'Clock In Failed',
+        description: message,
+      });
     } finally {
       dispatch(setLoading(false));
     }
@@ -96,19 +121,36 @@ const Dashboard: React.FC = () => {
       dispatch(setCurrentTimeEntry(null));
       dispatch(updateTimeEntry(timeEntry));
       setClockOutDialog(false);
+      
+      // Show success toast
+      addToast({
+        variant: 'success',
+        title: 'Clocked Out',
+        description: `Successfully clocked out at ${formatTime(new Date())}`,
+      });
     } catch (error: any) {
-      dispatch(setError(error.response?.data?.message || 'Failed to clock out'));
+      const message = error.response?.data?.message || 'Failed to clock out';
+      dispatch(setError(message));
+      addToast({
+        variant: 'error',
+        title: 'Clock Out Failed',
+        description: message,
+      });
     } finally {
       dispatch(setLoading(false));
     }
   };
 
   const isCurrentlyClockedIn = currentTimeEntry?.status === TimeEntryStatus.Active;
-  const currentTime = new Date();
+
+  // Show skeleton loading while loading
+  if (loading && !currentTimeEntry) {
+    return <SkeletonDashboard />;
+  }
 
   return (
     <div className="space-y-6">
-      <Typography variant="h3" className="text-gray-900">
+      <Typography variant="h3" className="text-gray-900 dark:text-white">
         Welcome back, {user?.firstName}!
       </Typography>
       

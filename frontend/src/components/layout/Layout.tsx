@@ -24,6 +24,8 @@ import {
   LogoutIcon,
   UserIcon,
   SettingsIcon,
+  ThemeToggle,
+  useToast,
 } from '../../ui';
 
 interface LayoutProps {
@@ -38,6 +40,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const { resetOnboarding } = useOnboarding();
+  const { addToast } = useToast();
 
   // Determine current page for onboarding
   const getCurrentPage = () => {
@@ -53,6 +56,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   };
 
   const handleLogout = () => {
+    addToast({
+      variant: 'info',
+      title: 'Logged out',
+      description: 'You have been successfully logged out.',
+    });
     dispatch(logout());
     navigate('/login');
   };
@@ -125,7 +133,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Typography>
             
             <div className="flex items-center gap-x-4">
-              <Typography variant="body2" className="hidden sm:block text-gray-700">
+              <ThemeToggle />
+              
+              <Typography variant="body2" className="hidden sm:block text-gray-700 dark:text-gray-300">
                 {user?.firstName} {user?.lastName}
               </Typography>
               

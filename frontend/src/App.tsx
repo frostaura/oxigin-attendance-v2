@@ -7,11 +7,13 @@ import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import { store } from './store';
 import { useAppDispatch } from './utils/hooks';
 import { initializeAuth } from './store/authSlice';
+import { ToastProvider, ThemeProvider } from './ui';
 
 // Components
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Dashboard from './components/dashboard/Dashboard';
+import ComponentShowcase from './components/common/ComponentShowcase';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
@@ -37,6 +39,16 @@ const AppContent: React.FC = () => {
             </ProtectedRoute>
           }
         />
+        <Route
+          path="/showcase"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <ComponentShowcase />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
         <Route path="/" element={<Navigate to="/dashboard" replace />} />
         <Route path="*" element={<Navigate to="/dashboard" replace />} />
       </Routes>
@@ -47,11 +59,15 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-      <LocalizationProvider dateAdapter={AdapterDayjs}>
-        <div className="min-h-screen bg-gray-50">
-          <AppContent />
-        </div>
-      </LocalizationProvider>
+      <ThemeProvider>
+        <ToastProvider>
+          <LocalizationProvider dateAdapter={AdapterDayjs}>
+            <div className="min-h-screen bg-gray-50 dark:bg-gray-900 transition-colors">
+              <AppContent />
+            </div>
+          </LocalizationProvider>
+        </ToastProvider>
+      </ThemeProvider>
     </Provider>
   );
 };
