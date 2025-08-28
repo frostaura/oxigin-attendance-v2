@@ -17,28 +17,98 @@ Oxigin Attendance v2 is a robust solution that enables organizations to efficien
 - **API Documentation**: Swagger/OpenAPI integration
 - **Development**: Hot reload, TypeScript support, ESLint
 
-## 🎯 Key Use Cases
+## 🔐 Role-Based Access Control
 
-### For Employees
-- **Daily Time Tracking**: Clock in/out with a single click
-- **Break Management**: Track break times automatically or manually
-- **Location Tracking**: Optional location logging for remote/field work
-- **Personal Reports**: View individual time reports and work history
-- **Notes & Context**: Add notes to time entries for project tracking
+The system implements three distinct user roles with specific permissions and capabilities:
 
-### For Managers
-- **Team Oversight**: Monitor team attendance and working hours
-- **Report Generation**: Access comprehensive reports for team members
-- **Time Entry Management**: Create, edit, or delete team member time entries
-- **Overtime Monitoring**: Track and manage employee overtime
-- **Period Analysis**: Generate reports for specific date ranges
+| Feature | Employee | Manager | Administrator |
+|---------|----------|---------|---------------|
+| **Authentication** |
+| Login/Logout | ✅ | ✅ | ✅ |
+| View Profile | ✅ | ✅ | ✅ |
+| **Time Tracking** |
+| Clock In/Out | ✅ | ✅ | ✅ |
+| View Active Session | ✅ | ✅ | ✅ |
+| View Personal Time Entries | ✅ | ✅ | ✅ |
+| Personal Time Reports | ✅ | ✅ | ✅ |
+| Add Notes to Entries | ✅ | ✅ | ✅ |
+| **Management Features** |
+| View All Employees Reports | ❌ | ✅ | ✅ |
+| Create Time Entries for Others | ❌ | ✅ | ✅ |
+| Edit Any Time Entry | ❌ | ✅ | ✅ |
+| Delete Any Time Entry | ❌ | ✅ | ✅ |
+| **Administration** |
+| User Management | ❌ | ❌ | ✅ |
+| Role Assignment | ❌ | ❌ | ✅ |
+| System Configuration | ❌ | ❌ | ✅ |
+| Database Operations | ❌ | ❌ | ✅ |
 
-### For Administrators
-- **System Management**: Full access to all system features
-- **User Management**: Create, modify, and deactivate user accounts
-- **Role Assignment**: Assign and manage user roles and permissions
-- **System Reports**: Access organization-wide attendance analytics
-- **Data Maintenance**: Bulk operations and system configuration
+## 🎯 User Role Use Cases
+
+### 👤 Employee Role Features
+**Core Capabilities**: Personal time tracking and reporting
+
+#### Available Features:
+- **✅ Daily Time Tracking**: Clock in/out with a single click
+- **✅ Break Management**: Track break times automatically or manually
+- **✅ Location Tracking**: Optional location logging for remote/field work
+- **✅ Personal Reports**: View individual time reports and work history
+- **✅ Notes & Context**: Add notes to time entries for project tracking
+- **✅ Session Monitoring**: View current active time entry status
+
+#### API Access:
+- `POST /api/auth/login` - Authentication
+- `GET /api/auth/me` - View profile
+- `POST /api/timeentry/clock-in` - Start work session
+- `POST /api/timeentry/clock-out` - End work session
+- `GET /api/timeentry/active` - Check active session
+- `GET /api/timeentry` - View personal entries
+- `GET /api/timeentry/report` - Personal time reports
+- `GET /api/timeentry/{id}` - View specific entry (own only)
+
+### 👨‍💼 Manager Role Features
+**Core Capabilities**: All Employee features + Team management and oversight
+
+#### Additional Features:
+- **✅ Team Oversight**: Monitor team attendance and working hours
+- **✅ Organization Reports**: Access comprehensive reports for all employees
+- **✅ Time Entry Management**: Create, edit, or delete any team member time entries
+- **✅ Overtime Monitoring**: Track and manage employee overtime across the organization
+- **✅ Period Analysis**: Generate detailed reports for specific date ranges
+- **✅ Administrative Actions**: Manage time entries for operational needs
+
+#### Additional API Access:
+- `GET /api/timeentry/report/all` - All employees reports
+- `POST /api/timeentry` - Create entries for any user
+- `PUT /api/timeentry/{id}` - Edit any time entry
+- `DELETE /api/timeentry/{id}` - Delete any time entry
+
+### 👨‍💻 Administrator Role Features
+**Core Capabilities**: All Manager features + Full system administration
+
+#### Additional Features:
+- **✅ System Management**: Complete access to all system features
+- **✅ User Management**: Create, modify, and deactivate user accounts
+- **✅ Role Assignment**: Assign and manage user roles and permissions
+- **✅ System Reports**: Access organization-wide attendance analytics
+- **✅ Data Maintenance**: Bulk operations and system configuration
+- **✅ Security Management**: Configure authentication and authorization settings
+- **✅ Database Operations**: Direct database access and maintenance capabilities
+
+#### Default Admin Account:
+- **Email**: `admin@oxigin.com`
+- **Password**: `Admin@123`
+- **Employee ID**: `ADMIN001`
+
+### 🔑 Demo Accounts
+
+The system comes pre-configured with demo accounts for testing each role:
+
+| Role | Email | Password | Employee ID | Department |
+|------|-------|----------|-------------|------------|
+| Administrator | `admin@oxigin.com` | `Admin@123` | `ADMIN001` | IT |
+| Manager | `manager@oxigin.com` | `Manager@123` | `MGR001` | Operations |
+| Employee | `employee@oxigin.com` | `Employee@123` | `EMP001` | Operations |
 
 ## ✅ Features
 
@@ -62,86 +132,117 @@ Oxigin Attendance v2 is a robust solution that enables organizations to efficien
 - ✅ **Historical Tracking**: Complete audit trail of time entries
 
 ### Reporting & Analytics
-- ✅ **Personal Reports**: Individual employee time summaries
-- ✅ **Management Reports**: Team and organization-wide analytics
-- ✅ **Date Range Filtering**: Flexible report period selection
-- ✅ **Detailed Breakdowns**: Total hours, overtime, and days worked
-- ✅ **Real-Time Data**: Live updates and current status displays
+- ✅ **Personal Reports**: Individual employee time summaries (All roles)
+- ✅ **Management Reports**: Team and organization-wide analytics (Manager/Administrator only)
+- ✅ **Date Range Filtering**: Flexible report period selection (All roles)
+- ✅ **Detailed Breakdowns**: Total hours, overtime, and days worked (All roles)
+- ✅ **Real-Time Data**: Live updates and current status displays (All roles)
+- ✅ **Cross-Employee Access**: View any employee's data (Manager/Administrator only)
 
-## 📖 User Workflows
+## 📖 Role-Based User Workflows
 
-### Employee Daily Workflow
+### 👤 Employee Daily Workflow
+**Available Features**: Personal time tracking, viewing own records, personal reports
 
-#### 1. Starting Your Work Day
+#### 1. Starting Your Work Day (Employee Only)
 ```
-1. Login to the system
+1. Login to the system using employee credentials
 2. Navigate to the Dashboard
 3. Click "Clock In" button
-4. Optionally add location or notes
-5. Confirm clock-in
+4. Optionally add location or notes (available to all roles)
+5. Confirm clock-in (triggers POST /api/timeentry/clock-in)
 ```
 
-#### 2. During Work Hours
+#### 2. During Work Hours (Employee Only)
 ```
 - View real-time work duration
 - Monitor break time accumulation
 - Add notes to current session if needed
-- View current session status
+- View current session status (GET /api/timeentry/active)
+- Cannot access other employees' data
 ```
 
-#### 3. Ending Your Work Day
+#### 3. Ending Your Work Day (Employee Only)
 ```
 1. Click "Clock Out" button
 2. Add total break time (if not tracked automatically)
 3. Add end-of-day notes
-4. Confirm clock-out
-5. Review daily summary
+4. Confirm clock-out (triggers POST /api/timeentry/clock-out)
+5. Review daily summary (personal data only)
 ```
 
-#### 4. Viewing Your Time Records
+#### 4. Viewing Your Time Records (Employee Only)
 ```
-1. Access "Time Entries" section
-2. Filter by date range
-3. View detailed breakdown
-4. Generate personal reports
+1. Access "Time Entries" section (GET /api/timeentry)
+2. Filter by date range (own data only)
+3. View detailed breakdown of personal entries
+4. Generate personal reports (GET /api/timeentry/report)
+5. Cannot access team or organization reports
 ```
 
-### Manager Workflow
+### 👨‍💼 Manager Daily Workflow
+**Available Features**: All Employee features + Team management, organization reports, time entry CRUD operations
 
-#### 1. Team Monitoring
+#### 1. Team Monitoring (Manager + Administrator)
 ```
 1. Login with Manager role
-2. Access "All Employees Report"
+2. Access "All Employees Report" (GET /api/timeentry/report/all)
 3. Select date range for analysis
-4. Review team attendance patterns
-5. Identify overtime and attendance issues
+4. Review team attendance patterns for all employees
+5. Identify overtime and attendance issues across organization
+6. Can view any employee's time data
 ```
 
-#### 2. Managing Team Time Entries
+#### 2. Managing Team Time Entries (Manager + Administrator)
 ```
-1. Navigate to time entry management
-2. Search for specific employee
-3. Create, edit, or delete entries as needed
-4. Add administrative notes
-5. Update entry status
+1. Navigate to time entry management interface
+2. Search for specific employee or view all
+3. Create entries for any employee (POST /api/timeentry?userId=...)
+4. Edit existing entries (PUT /api/timeentry/{id})
+5. Delete entries as needed (DELETE /api/timeentry/{id})
+6. Add administrative notes to entries
+7. Update entry status for any employee
 ```
 
-### Administrator Workflow
-
-#### 1. System Overview
+#### 3. Administrative Time Tracking (Manager + Administrator)
 ```
-1. Login with Administrator role
-2. Access system-wide reports
-3. Monitor all user activities
+1. Perform personal time tracking (same as Employee)
+2. Override or correct team member time entries
+3. Handle missed punches and time corrections
+4. Generate comprehensive team reports
+5. Monitor compliance and attendance policies
+```
+
+### 👨‍💻 Administrator System Workflow
+**Available Features**: All Manager features + Full system administration and user management
+#### 1. System Overview (Administrator Only)
+```
+1. Login with Administrator role (admin@oxigin.com)
+2. Access system-wide reports and analytics
+3. Monitor all user activities across organization
 4. Review system performance metrics
+5. Full access to all time tracking data
+6. Can perform any operation available to Manager role
 ```
 
-#### 2. User Management
+#### 2. User Management (Administrator Only)
 ```
-1. Create new user accounts
-2. Assign appropriate roles
-3. Manage user permissions
-4. Deactivate/reactivate accounts
+1. Create new user accounts via registration or direct creation
+2. Assign appropriate roles (Employee, Manager, Administrator)
+3. Manage user permissions and access levels
+4. Deactivate/reactivate user accounts
+5. Modify user profile information
+6. Reset passwords and manage security settings
+```
+
+#### 3. System Administration (Administrator Only)
+```
+1. Configure system-wide settings
+2. Manage database operations and maintenance
+3. Monitor system logs and security events
+4. Backup and recovery operations
+5. Integration management with external systems
+6. Audit trail monitoring and compliance reporting
 ```
 
 ## 📚 API Documentation
@@ -149,7 +250,9 @@ Oxigin Attendance v2 is a robust solution that enables organizations to efficien
 ### Authentication Endpoints
 
 #### POST /api/auth/login
-**Purpose**: Authenticate user and receive JWT token
+**Purpose**: Authenticate user and receive JWT token  
+**Authorization**: None (Public endpoint)  
+**Available to**: All users
 
 **Request Body**:
 ```json
@@ -178,7 +281,9 @@ Oxigin Attendance v2 is a robust solution that enables organizations to efficien
 ```
 
 #### POST /api/auth/register
-**Purpose**: Register a new user account
+**Purpose**: Register a new user account  
+**Authorization**: None (Public endpoint)  
+**Available to**: All users
 
 **Request Body**:
 ```json
@@ -195,8 +300,9 @@ Oxigin Attendance v2 is a robust solution that enables organizations to efficien
 ```
 
 #### GET /api/auth/me
-**Purpose**: Get current user information
-**Authorization**: Bearer token required
+**Purpose**: Get current user information  
+**Authorization**: Bearer token required  
+**Available to**: Employee, Manager, Administrator
 
 **Response**:
 ```json
@@ -217,8 +323,9 @@ Oxigin Attendance v2 is a robust solution that enables organizations to efficien
 ### Time Entry Endpoints
 
 #### POST /api/timeentry/clock-in
-**Purpose**: Start a new time entry (clock in)
-**Authorization**: Bearer token required
+**Purpose**: Start a new time entry (clock in)  
+**Authorization**: Bearer token required  
+**Available to**: Employee, Manager, Administrator
 
 **Request Body**:
 ```json
@@ -247,8 +354,9 @@ Oxigin Attendance v2 is a robust solution that enables organizations to efficien
 ```
 
 #### POST /api/timeentry/clock-out
-**Purpose**: End current time entry (clock out)
-**Authorization**: Bearer token required
+**Purpose**: End current time entry (clock out)  
+**Authorization**: Bearer token required  
+**Available to**: Employee, Manager, Administrator
 
 **Request Body**:
 ```json
@@ -278,8 +386,9 @@ Oxigin Attendance v2 is a robust solution that enables organizations to efficien
 ```
 
 #### GET /api/timeentry/active
-**Purpose**: Get current active time entry
-**Authorization**: Bearer token required
+**Purpose**: Get current active time entry  
+**Authorization**: Bearer token required  
+**Available to**: Employee, Manager, Administrator
 
 **Response** (if active):
 ```json
@@ -302,8 +411,9 @@ Oxigin Attendance v2 is a robust solution that enables organizations to efficien
 ```
 
 #### GET /api/timeentry
-**Purpose**: Get time entries with optional filtering
-**Authorization**: Bearer token required
+**Purpose**: Get time entries with optional filtering  
+**Authorization**: Bearer token required  
+**Available to**: Employee, Manager, Administrator  
 **Query Parameters**:
 - `startDate` (optional): Filter entries from this date
 - `endDate` (optional): Filter entries to this date
@@ -331,8 +441,9 @@ Oxigin Attendance v2 is a robust solution that enables organizations to efficien
 ```
 
 #### GET /api/timeentry/report
-**Purpose**: Get time report for current user
-**Authorization**: Bearer token required
+**Purpose**: Get time report for current user  
+**Authorization**: Bearer token required  
+**Available to**: Employee, Manager, Administrator  
 **Query Parameters**:
 - `startDate` (required): Report start date
 - `endDate` (required): Report end date
@@ -356,27 +467,36 @@ Oxigin Attendance v2 is a robust solution that enables organizations to efficien
 ```
 
 #### GET /api/timeentry/report/all
-**Purpose**: Get time reports for all employees (Manager/Admin only)
-**Authorization**: Bearer token required (Manager or Administrator role)
+**Purpose**: Get time reports for all employees  
+**Authorization**: Bearer token required  
+**Available to**: Manager, Administrator only  
 **Query Parameters**:
 - `startDate` (required): Report start date
 - `endDate` (required): Report end date
 
-### Administrative Endpoints (Manager/Admin Only)
+### Administrative Endpoints
+
+#### GET /api/timeentry/{id}
+**Purpose**: Get specific time entry by ID  
+**Authorization**: Bearer token required  
+**Available to**: Employee (own entries), Manager, Administrator (any entry)
 
 #### POST /api/timeentry
-**Purpose**: Create time entry for any employee
-**Authorization**: Bearer token required (Manager or Administrator role)
+**Purpose**: Create time entry for any employee  
+**Authorization**: Bearer token required  
+**Available to**: Manager, Administrator only  
 **Query Parameters**:
 - `userId` (optional): Target user ID (if not provided, creates for current user)
 
 #### PUT /api/timeentry/{id}
-**Purpose**: Update existing time entry
-**Authorization**: Bearer token required (Manager or Administrator role)
+**Purpose**: Update existing time entry  
+**Authorization**: Bearer token required  
+**Available to**: Manager, Administrator only
 
 #### DELETE /api/timeentry/{id}
-**Purpose**: Delete time entry
-**Authorization**: Bearer token required (Manager or Administrator role)
+**Purpose**: Delete time entry  
+**Authorization**: Bearer token required  
+**Available to**: Manager, Administrator only
 
 ## 🗄️ Database Schema & Models
 
