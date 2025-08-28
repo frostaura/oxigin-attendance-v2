@@ -97,7 +97,16 @@ public class TimeEntryService : ITimeEntryService
 
             // Calculate total hours
             var totalTime = clockOutTime - timeEntry.ClockInTime;
-            timeEntry.TotalHours = totalTime - timeEntry.BreakTime.Value;
+            var breakTime = timeEntry.BreakTime ?? TimeSpan.Zero;
+            
+            // Ensure break time doesn't exceed total work time
+            if (breakTime > totalTime)
+            {
+                breakTime = TimeSpan.Zero;
+                timeEntry.BreakTime = TimeSpan.Zero;
+            }
+            
+            timeEntry.TotalHours = totalTime - breakTime;
 
             // Calculate overtime (assuming 8 hours is standard work day)
             var standardWorkDay = TimeSpan.FromHours(8);

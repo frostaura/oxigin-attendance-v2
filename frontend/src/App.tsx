@@ -14,6 +14,8 @@ import { initializeAuth } from './store/authSlice';
 import Login from './components/auth/Login';
 import Register from './components/auth/Register';
 import Dashboard from './components/dashboard/Dashboard';
+import TimeEntries from './components/timeentries/TimeEntries';
+import Reports from './components/reports/Reports';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/common/ProtectedRoute';
 
@@ -46,6 +48,26 @@ const AppContent: React.FC = () => {
             <ProtectedRoute>
               <Layout>
                 <Dashboard />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/time-entries"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <TimeEntries />
+              </Layout>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/reports"
+          element={
+            <ProtectedRoute>
+              <Layout>
+                <Reports />
               </Layout>
             </ProtectedRoute>
           }
