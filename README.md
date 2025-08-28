@@ -71,6 +71,13 @@ A full-stack time and attendance management system built with modern technologie
 git clone <repository-url>
 cd oxigin-attendance-v2
 
+# Set up environment files (required for security)
+cp .env.docker.example .env.docker
+cp .env.docker.dev.example .env.docker.dev
+
+# Edit .env.docker and .env.docker.dev with your secure credentials
+# Replace placeholder values with actual secure JWT keys and passwords
+
 # Start the application
 docker compose up --build
 

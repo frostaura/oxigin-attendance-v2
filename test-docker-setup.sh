@@ -69,18 +69,49 @@ echo ""
 # Test environment files
 echo "🔧 Testing environment configuration..."
 
+# Check for example files (these should exist in the repo)
+if [[ -f .env.docker.example ]]; then
+    echo "✅ .env.docker.example found"
+else
+    echo "❌ .env.docker.example not found"
+    exit 1
+fi
+
+if [[ -f .env.docker.dev.example ]]; then
+    echo "✅ .env.docker.dev.example found"
+else
+    echo "❌ .env.docker.dev.example not found"
+    exit 1
+fi
+
+# Check if user has set up their environment files
 if [[ -f .env.docker ]]; then
     echo "✅ .env.docker found"
 else
-    echo "❌ .env.docker not found"
-    exit 1
+    echo "⚠️  .env.docker not found - you need to copy from .env.docker.example and configure"
+    echo "   Run: cp .env.docker.example .env.docker"
+    echo "   Then edit .env.docker with your secure credentials"
 fi
 
 if [[ -f .env.docker.dev ]]; then
     echo "✅ .env.docker.dev found"
 else
-    echo "❌ .env.docker.dev not found"
-    exit 1
+    echo "⚠️  .env.docker.dev not found - you need to copy from .env.docker.dev.example and configure"
+    echo "   Run: cp .env.docker.dev.example .env.docker.dev"
+    echo "   Then edit .env.docker.dev with your secure credentials"
+fi
+
+# Security check - warn if environment files might contain default values
+if [[ -f .env.docker ]]; then
+    if grep -q "YOUR_" .env.docker; then
+        echo "⚠️  Warning: .env.docker contains placeholder values - please replace with secure credentials"
+    fi
+fi
+
+if [[ -f .env.docker.dev ]]; then
+    if grep -q "YOUR_" .env.docker.dev; then
+        echo "⚠️  Warning: .env.docker.dev contains placeholder values - please replace with secure credentials"
+    fi
 fi
 
 echo ""
@@ -98,6 +129,8 @@ declare -a required_files=(
     "frontend/nginx.conf"
     "docker-compose.yml"
     "docker-compose.dev.yml"
+    ".env.docker.example"
+    ".env.docker.dev.example"
     "DOCKER.md"
 )
 
@@ -120,10 +153,14 @@ echo ""
 echo "🎉 All Docker setup tests passed!"
 echo ""
 echo "📖 Next steps:"
-echo "   1. Start the application: docker compose up --build"
-echo "   2. For development: docker compose -f docker-compose.dev.yml up --build"
-echo "   3. Access frontend at: http://localhost:3000"
-echo "   4. Access backend at: http://localhost:5000"
-echo "   5. View API docs at: http://localhost:5000/swagger"
+echo "   1. Set up environment files:"
+echo "      cp .env.docker.example .env.docker"
+echo "      cp .env.docker.dev.example .env.docker.dev"
+echo "      Edit both files with secure credentials"
+echo "   2. Start the application: docker compose up --build"
+echo "   3. For development: docker compose -f docker-compose.dev.yml up --build"
+echo "   4. Access frontend at: http://localhost:3000"
+echo "   5. Access backend at: http://localhost:5000"
+echo "   6. View API docs at: http://localhost:5000/swagger"
 echo ""
 echo "📚 For more information, see DOCKER.md"

@@ -15,7 +15,20 @@ This document provides instructions for running the Oxigin Attendance applicatio
    cd oxigin-attendance-v2
    ```
 
-2. **Start the application with Docker Compose:**
+2. **Set up environment files:**
+   ```bash
+   # Copy environment templates and configure with your values
+   cp .env.docker.example .env.docker
+   cp .env.docker.dev.example .env.docker.dev
+   ```
+   
+   **Important**: Edit the copied `.env.docker` and `.env.docker.dev` files to replace placeholder values:
+   - Set a secure `JwtSettings__SecretKey` (at least 32 characters)
+   - Set a secure `ConnectionStrings__DefaultConnection` password
+   
+   **Security Note**: Never commit `.env.docker` or `.env.docker.dev` files to version control as they contain sensitive credentials.
+
+3. **Start the application with Docker Compose:**
    ```bash
    docker compose up --build
    ```
@@ -52,15 +65,29 @@ docker compose -f docker-compose.dev.yml up --build
 
 ## Environment Variables
 
-The application uses the following environment variables:
+**⚠️ Security Notice**: Environment files (`.env.docker`, `.env.docker.dev`) contain sensitive credentials and should never be committed to version control. Use the provided `.example` files as templates.
 
-### Backend
+### Setup Instructions
+1. Copy the example environment files:
+   ```bash
+   cp .env.docker.example .env.docker
+   cp .env.docker.dev.example .env.docker.dev
+   ```
+
+2. Edit the files and replace placeholder values with secure credentials:
+
+### Backend Environment Variables
 - `ASPNETCORE_ENVIRONMENT`: Set to "Development" or "Production"
-- `ConnectionStrings__DefaultConnection`: PostgreSQL connection string
-- `JwtSettings__SecretKey`: JWT signing key
+- `ConnectionStrings__DefaultConnection`: PostgreSQL connection string with secure password
+- `JwtSettings__SecretKey`: **Strong JWT signing key (minimum 32 characters)**
 
-### Frontend
+### Frontend Environment Variables
 - `REACT_APP_API_URL`: Backend API URL (defaults to http://localhost:5000/api)
+
+### Example Secure Values
+- **JWT Secret**: Use a cryptographically secure random string of at least 32 characters
+- **Database Password**: Use a strong password instead of default "postgres"
+- Generate secure values: `openssl rand -hex 32` for JWT keys
 
 ## Database Setup
 
