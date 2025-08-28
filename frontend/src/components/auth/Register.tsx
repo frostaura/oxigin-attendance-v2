@@ -1,14 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Button,
   TextField,
-  Typography,
-  Paper,
-  Container,
-  Alert,
-  CircularProgress,
-  Link,
 } from '@mui/material';
 import { DatePicker } from '@mui/x-date-pickers/DatePicker';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
@@ -19,6 +12,7 @@ import { useAppDispatch, useAppSelector } from '../../utils/hooks';
 import { loginStart, loginSuccess, loginFailure, clearError } from '../../store/authSlice';
 import { authApi } from '../../services/api';
 import { RegisterRequest } from '../../types/auth';
+import { Button, Typography, Alert } from '../../ui';
 
 const Register: React.FC = () => {
   const [formData, setFormData] = useState<RegisterRequest>({
@@ -104,35 +98,21 @@ const Register: React.FC = () => {
   };
 
   return (
-    <Container component="main" maxWidth="md">
-      <Box
-        sx={{
-          marginTop: 4,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <Typography component="h1" variant="h4" sx={{ mb: 3 }}>
-            Oxigin Attendance
-          </Typography>
-          
-          <Typography component="h2" variant="h5" sx={{ mb: 3 }}>
-            Create Account
-          </Typography>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-2xl w-full space-y-8">
+        <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="text-center">
+            <Typography variant="h2" className="mb-2">
+              Oxigin Attendance
+            </Typography>
+            
+            <Typography variant="h4" className="mb-8 text-gray-600">
+              Create Account
+            </Typography>
+          </div>
 
           {error && (
-            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+            <Alert variant="error" className="mb-6">
               {error}
             </Alert>
           )}
@@ -234,24 +214,29 @@ const Register: React.FC = () => {
               </Box>
               <Button
                 type="submit"
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                className="w-full mt-6 mb-4"
+                size="lg"
                 disabled={loading}
-                startIcon={loading && <CircularProgress size={20} />}
               >
                 {loading ? 'Creating Account...' : 'Sign Up'}
               </Button>
-              <Box textAlign="center">
-                <Link component={RouterLink} to="/login" variant="body2">
-                  Already have an account? Sign In
-                </Link>
-              </Box>
+              
+              <div className="text-center">
+                <Typography variant="body2" color="textSecondary">
+                  Already have an account?{' '}
+                  <RouterLink 
+                    to="/login" 
+                    className="text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    Sign In
+                  </RouterLink>
+                </Typography>
+              </div>
             </Box>
           </LocalizationProvider>
-        </Paper>
-      </Box>
-    </Container>
+        </div>
+      </div>
+    </div>
   );
 };
 

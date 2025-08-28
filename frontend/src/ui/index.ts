@@ -5,4 +5,8 @@ export { Typography } from './typography';
 export { Alert } from './alert';
 export { Badge } from './badge';
 export { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './card';
+export { Avatar } from './avatar';
+export { DropdownMenu, DropdownMenuItem, DropdownMenuSeparator } from './dropdown';
+export { Sidebar, SidebarHeader, SidebarContent, SidebarNav, SidebarNavItem } from './sidebar';
+export { Progress } from './progress';
 export * from './icons';

@@ -1,39 +1,30 @@
 import React, { useState } from 'react';
-import {
-  AppBar,
-  Box,
-  CssBaseline,
-  Drawer,
-  IconButton,
-  List,
-  ListItem,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Toolbar,
-  Typography,
-  Menu,
-  MenuItem,
-  Avatar,
-  Divider,
-} from '@mui/material';
-import {
-  Menu as MenuIcon,
-  Dashboard as DashboardIcon,
-  Schedule as ScheduleIcon,
-  Assessment as AssessmentIcon,
-  People as PeopleIcon,
-  ExitToApp as LogoutIcon,
-  AccountCircle as AccountIcon,
-  Settings as SettingsIcon,
-} from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks';
 import { logout } from '../../store/authSlice';
 import OnboardingOverlay from '../common/OnboardingOverlay';
 import { useOnboarding } from '../../utils/useOnboarding';
-
-const drawerWidth = 240;
+import {
+  Button,
+  Typography,
+  Avatar,
+  DropdownMenu,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  Sidebar,
+  SidebarHeader,
+  SidebarContent,
+  SidebarNav,
+  SidebarNavItem,
+  MenuIcon,
+  DashboardIcon,
+  ClockIcon,
+  ReportsIcon,
+  PeopleIcon,
+  LogoutIcon,
+  UserIcon,
+  SettingsIcon,
+} from '../../ui';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -41,7 +32,6 @@ interface LayoutProps {
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const [mobileOpen, setMobileOpen] = useState(false);
-  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   
   const navigate = useNavigate();
   const location = useLocation();
@@ -62,24 +52,15 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     setMobileOpen(!mobileOpen);
   };
 
-  const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleMenuClose = () => {
-    setAnchorEl(null);
-  };
-
   const handleLogout = () => {
     dispatch(logout());
     navigate('/login');
-    handleMenuClose();
   };
 
   const menuItems = [
     { text: 'Dashboard', icon: <DashboardIcon />, path: '/dashboard' },
-    { text: 'Time Entries', icon: <ScheduleIcon />, path: '/time-entries' },
-    { text: 'Reports', icon: <AssessmentIcon />, path: '/reports' },
+    { text: 'Time Entries', icon: <ClockIcon />, path: '/time-entries' },
+    { text: 'Reports', icon: <ReportsIcon />, path: '/reports' },
   ];
 
   // Add admin-only menu items
@@ -89,150 +70,112 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
     );
   }
 
-  const drawer = (
+  const sidebarContent = (
     <div data-onboarding-target="nav-sidebar">
-      <Toolbar>
-        <Typography variant="h6" noWrap component="div">
+      <SidebarHeader>
+        <Typography variant="h5" className="font-bold text-gray-900">
           Oxigin Attendance
         </Typography>
-      </Toolbar>
-      <Divider />
-      <List>
-        {menuItems.map((item) => (
-          <ListItem key={item.text} disablePadding>
-            <ListItemButton
-              selected={location.pathname === item.path}
+      </SidebarHeader>
+      <SidebarContent>
+        <SidebarNav>
+          {menuItems.map((item) => (
+            <SidebarNavItem
+              key={item.text}
+              isActive={location.pathname === item.path}
               onClick={() => navigate(item.path)}
+              icon={item.icon}
             >
-              <ListItemIcon>{item.icon}</ListItemIcon>
-              <ListItemText primary={item.text} />
-            </ListItemButton>
-          </ListItem>
-        ))}
-      </List>
+              {item.text}
+            </SidebarNavItem>
+          ))}
+        </SidebarNav>
+      </SidebarContent>
     </div>
   );
 
   return (
-    <Box sx={{ display: 'flex' }}>
-      <CssBaseline />
-      <AppBar
-        position="fixed"
-        sx={{
-          width: { sm: `calc(100% - ${drawerWidth}px)` },
-          ml: { sm: `${drawerWidth}px` },
-        }}
-      >
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: 'none' } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
-            {menuItems.find(item => item.path === location.pathname)?.text || 'Dashboard'}
-          </Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Typography variant="body2" sx={{ mr: 1, display: { xs: 'none', sm: 'block' } }}>
-              {user?.firstName} {user?.lastName}
-            </Typography>
-            <IconButton
-              size="large"
-              edge="end"
-              aria-label="account of current user"
-              aria-controls="profile-menu"
-              aria-haspopup="true"
-              onClick={handleProfileMenuOpen}
-              color="inherit"
-              data-onboarding-target="profile-avatar"
-            >
-              <Avatar sx={{ width: 32, height: 32 }}>
-                {user?.firstName?.[0]}{user?.lastName?.[0]}
-              </Avatar>
-            </IconButton>
-          </Box>
-        </Toolbar>
-      </AppBar>
-      
-      <Menu
-        id="profile-menu"
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleMenuClose}
-      >
-        <MenuItem onClick={handleMenuClose}>
-          <ListItemIcon>
-            <AccountIcon fontSize="small" />
-          </ListItemIcon>
-          Profile
-        </MenuItem>
-        <MenuItem onClick={handleMenuClose}>
-          <ListItemIcon>
-            <SettingsIcon fontSize="small" />
-          </ListItemIcon>
-          Settings
-        </MenuItem>
-        <MenuItem onClick={resetOnboarding}>
-          <ListItemIcon>
-            <ScheduleIcon fontSize="small" />
-          </ListItemIcon>
-          Restart Tour
-        </MenuItem>
-        <Divider />
-        <MenuItem onClick={handleLogout}>
-          <ListItemIcon>
-            <LogoutIcon fontSize="small" />
-          </ListItemIcon>
-          Logout
-        </MenuItem>
-      </Menu>
+    <div className="flex h-screen bg-gray-50">
+      {/* Mobile sidebar */}
+      <Sidebar variant="mobile" isOpen={mobileOpen} onClose={() => setMobileOpen(false)}>
+        {sidebarContent}
+      </Sidebar>
 
-      <Box
-        component="nav"
-        sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
-        aria-label="navigation"
-      >
-        <Drawer
-          variant="temporary"
-          open={mobileOpen}
-          onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
-          sx={{
-            display: { xs: 'block', sm: 'none' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-        >
-          {drawer}
-        </Drawer>
-        <Drawer
-          variant="permanent"
-          sx={{
-            display: { xs: 'none', sm: 'block' },
-            '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
-          }}
-          open
-        >
-          {drawer}
-        </Drawer>
-      </Box>
-      
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 3, width: { sm: `calc(100% - ${drawerWidth}px)` } }}
-      >
-        <Toolbar />
-        {children}
-      </Box>
+      {/* Desktop sidebar */}
+      <Sidebar variant="desktop">
+        {sidebarContent}
+      </Sidebar>
+
+      {/* Main content area */}
+      <div className="flex flex-1 flex-col lg:pl-64">
+        {/* Header */}
+        <header className="sticky top-0 z-30 flex h-16 shrink-0 items-center gap-x-4 border-b border-gray-200 bg-white px-4 shadow-sm sm:gap-x-6 sm:px-6 lg:px-8">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleDrawerToggle}
+            className="lg:hidden"
+          >
+            <MenuIcon className="h-5 w-5" />
+          </Button>
+          
+          <div className="flex flex-1 items-center justify-between">
+            <Typography variant="h4" className="text-gray-900">
+              {menuItems.find(item => item.path === location.pathname)?.text || 'Dashboard'}
+            </Typography>
+            
+            <div className="flex items-center gap-x-4">
+              <Typography variant="body2" className="hidden sm:block text-gray-700">
+                {user?.firstName} {user?.lastName}
+              </Typography>
+              
+              <DropdownMenu
+                trigger={
+                  <Button
+                    variant="ghost"
+                    size="icon"
+                    className="relative h-8 w-8 rounded-full"
+                    data-onboarding-target="profile-avatar"
+                  >
+                    <Avatar size="sm">
+                      {user?.firstName?.[0]}{user?.lastName?.[0]}
+                    </Avatar>
+                  </Button>
+                }
+              >
+                <DropdownMenuItem onClick={() => {}}>
+                  <UserIcon className="mr-3 h-4 w-4" />
+                  Profile
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => {}}>
+                  <SettingsIcon className="mr-3 h-4 w-4" />
+                  Settings
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={resetOnboarding}>
+                  <ClockIcon className="mr-3 h-4 w-4" />
+                  Restart Tour
+                </DropdownMenuItem>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={handleLogout} variant="danger">
+                  <LogoutIcon className="mr-3 h-4 w-4" />
+                  Logout
+                </DropdownMenuItem>
+              </DropdownMenu>
+            </div>
+          </div>
+        </header>
+
+        {/* Page content */}
+        <main className="flex-1 overflow-auto">
+          <div className="px-4 py-6 sm:px-6 lg:px-8">
+            {children}
+          </div>
+        </main>
+      </div>
       
       {/* Onboarding Overlay */}
       <OnboardingOverlay currentPage={getCurrentPage()} />
-    </Box>
+    </div>
   );
 };
 
