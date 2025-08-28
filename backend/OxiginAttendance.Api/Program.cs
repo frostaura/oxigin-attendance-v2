@@ -155,6 +155,9 @@ using (var scope = app.Services.CreateScope())
         
         // Seed default admin user
         await SeedDefaultAdminAsync(userManager);
+        
+        // Seed default users for all user types
+        await SeedDefaultUsersAsync(userManager);
     }
     catch (Exception ex)
     {
@@ -203,5 +206,60 @@ async Task SeedDefaultAdminAsync(UserManager<ApplicationUser> userManager)
 
         await userManager.CreateAsync(adminUser, "Admin@123");
         await userManager.AddToRoleAsync(adminUser, "Administrator");
+    }
+}
+
+async Task SeedDefaultUsersAsync(UserManager<ApplicationUser> userManager)
+{
+    // Seed Manager user
+    var managerEmail = "manager@oxigin.com";
+    var managerUser = await userManager.FindByEmailAsync(managerEmail);
+    
+    if (managerUser == null)
+    {
+        managerUser = new ApplicationUser
+        {
+            UserName = managerEmail,
+            Email = managerEmail,
+            FirstName = "Demo",
+            LastName = "Manager",
+            EmployeeId = "MGR001",
+            Department = "Operations",
+            JobTitle = "Department Manager",
+            HireDate = DateTime.UtcNow.AddMonths(-6),
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            EmailConfirmed = true
+        };
+
+        await userManager.CreateAsync(managerUser, "Manager@123");
+        await userManager.AddToRoleAsync(managerUser, "Manager");
+    }
+    
+    // Seed Employee user
+    var employeeEmail = "employee@oxigin.com";
+    var employeeUser = await userManager.FindByEmailAsync(employeeEmail);
+    
+    if (employeeUser == null)
+    {
+        employeeUser = new ApplicationUser
+        {
+            UserName = employeeEmail,
+            Email = employeeEmail,
+            FirstName = "Demo",
+            LastName = "Employee",
+            EmployeeId = "EMP001",
+            Department = "Operations",
+            JobTitle = "Staff Member",
+            HireDate = DateTime.UtcNow.AddMonths(-3),
+            IsActive = true,
+            CreatedAt = DateTime.UtcNow,
+            UpdatedAt = DateTime.UtcNow,
+            EmailConfirmed = true
+        };
+
+        await userManager.CreateAsync(employeeUser, "Employee@123");
+        await userManager.AddToRoleAsync(employeeUser, "Employee");
     }
 }

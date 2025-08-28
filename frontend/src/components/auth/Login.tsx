@@ -9,6 +9,8 @@ import {
   Alert,
   CircularProgress,
   Link,
+  Divider,
+  Chip,
 } from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks';
@@ -63,6 +65,10 @@ const Login: React.FC = () => {
       const errorMessage = error.response?.data?.message || 'Login failed. Please try again.';
       dispatch(loginFailure(errorMessage));
     }
+  };
+
+  const handleQuickLogin = (email: string, password: string) => {
+    setFormData({ email, password });
   };
 
   return (
@@ -136,6 +142,58 @@ const Login: React.FC = () => {
             >
               {loading ? 'Signing In...' : 'Sign In'}
             </Button>
+
+            {/* Quick Access Demo Buttons */}
+            <Box sx={{ mt: 2, mb: 2 }}>
+              <Divider sx={{ mb: 2 }}>
+                <Chip label="Quick Demo Access" size="small" />
+              </Divider>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleQuickLogin('admin@oxigin.com', 'Admin@123')}
+                  disabled={loading}
+                  sx={{ 
+                    textTransform: 'none',
+                    fontSize: '0.875rem',
+                    color: 'primary.main',
+                    borderColor: 'primary.main'
+                  }}
+                >
+                  Administrator Demo (admin@oxigin.com)
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleQuickLogin('manager@oxigin.com', 'Manager@123')}
+                  disabled={loading}
+                  sx={{ 
+                    textTransform: 'none',
+                    fontSize: '0.875rem',
+                    color: 'secondary.main',
+                    borderColor: 'secondary.main'
+                  }}
+                >
+                  Manager Demo (manager@oxigin.com)
+                </Button>
+                <Button
+                  variant="outlined"
+                  size="small"
+                  onClick={() => handleQuickLogin('employee@oxigin.com', 'Employee@123')}
+                  disabled={loading}
+                  sx={{ 
+                    textTransform: 'none',
+                    fontSize: '0.875rem',
+                    color: 'success.main',
+                    borderColor: 'success.main'
+                  }}
+                >
+                  Employee Demo (employee@oxigin.com)
+                </Button>
+              </Box>
+            </Box>
+
             <Box textAlign="center">
               <Link component={RouterLink} to="/register" variant="body2">
                 Don't have an account? Sign Up
