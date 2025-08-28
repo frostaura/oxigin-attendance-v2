@@ -64,7 +64,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   ];
 
   // Add admin-only menu items
-  if (user?.roles.includes('Administrator') || user?.roles.includes('Manager')) {
+  if (user?.roles?.includes('Administrator') || user?.roles?.includes('Manager')) {
     menuItems.push(
       { text: 'Employees', icon: <PeopleIcon />, path: '/employees' }
     );
