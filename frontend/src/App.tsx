@@ -1,8 +1,6 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { Provider } from 'react-redux';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
-import CssBaseline from '@mui/material/CssBaseline';
 import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 
@@ -16,17 +14,6 @@ import Register from './components/auth/Register';
 import Dashboard from './components/dashboard/Dashboard';
 import Layout from './components/layout/Layout';
 import ProtectedRoute from './components/common/ProtectedRoute';
-
-const theme = createTheme({
-  palette: {
-    primary: {
-      main: '#1976d2',
-    },
-    secondary: {
-      main: '#dc004e',
-    },
-  },
-});
 
 const AppContent: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -60,12 +47,11 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <LocalizationProvider dateAdapter={AdapterDayjs}>
-          <CssBaseline />
+      <LocalizationProvider dateAdapter={AdapterDayjs}>
+        <div className="min-h-screen bg-gray-50">
           <AppContent />
-        </LocalizationProvider>
-      </ThemeProvider>
+        </div>
+      </LocalizationProvider>
     </Provider>
   );
 };
