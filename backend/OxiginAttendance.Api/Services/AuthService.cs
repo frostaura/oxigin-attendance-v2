@@ -89,7 +89,7 @@ public class AuthService : IAuthService
                 EmployeeId = registerDto.EmployeeId,
                 Department = registerDto.Department,
                 JobTitle = registerDto.JobTitle,
-                HireDate = registerDto.HireDate,
+                HireDate = DateTime.SpecifyKind(registerDto.HireDate, DateTimeKind.Utc),
                 IsActive = true,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
