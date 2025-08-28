@@ -30,6 +30,8 @@ import {
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks';
 import { logout } from '../../store/authSlice';
+import OnboardingOverlay from '../common/OnboardingOverlay';
+import { useOnboarding } from '../../utils/useOnboarding';
 
 const drawerWidth = 240;
 
@@ -45,6 +47,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const location = useLocation();
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
+  const { resetOnboarding } = useOnboarding();
+
+  // Determine current page for onboarding
+  const getCurrentPage = () => {
+    const path = location.pathname;
+    if (path === '/dashboard') return 'dashboard';
+    if (path === '/time-entries') return 'time-entries';
+    if (path === '/reports') return 'reports';
+    return 'dashboard';
+  };
 
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
@@ -78,7 +90,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   }
 
   const drawer = (
-    <div>
+    <div data-onboarding-target="nav-sidebar">
       <Toolbar>
         <Typography variant="h6" noWrap component="div">
           Oxigin Attendance
@@ -136,6 +148,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
               aria-haspopup="true"
               onClick={handleProfileMenuOpen}
               color="inherit"
+              data-onboarding-target="profile-avatar"
             >
               <Avatar sx={{ width: 32, height: 32 }}>
                 {user?.firstName?.[0]}{user?.lastName?.[0]}
@@ -162,6 +175,12 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             <SettingsIcon fontSize="small" />
           </ListItemIcon>
           Settings
+        </MenuItem>
+        <MenuItem onClick={resetOnboarding}>
+          <ListItemIcon>
+            <ScheduleIcon fontSize="small" />
+          </ListItemIcon>
+          Restart Tour
         </MenuItem>
         <Divider />
         <MenuItem onClick={handleLogout}>
@@ -210,6 +229,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <Toolbar />
         {children}
       </Box>
+      
+      {/* Onboarding Overlay */}
+      <OnboardingOverlay currentPage={getCurrentPage()} />
     </Box>
   );
 };
