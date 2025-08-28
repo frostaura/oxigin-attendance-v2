@@ -1,0 +1,22 @@
+# Development Dockerfile for Backend with live reload
+FROM mcr.microsoft.com/dotnet/sdk:8.0
+
+WORKDIR /app
+
+# Install dotnet tools for hot reload
+RUN dotnet tool install --global dotnet-ef
+RUN dotnet tool install --global dotnet-watch
+ENV PATH="$PATH:/root/.dotnet/tools"
+
+# Copy project file and restore dependencies
+COPY *.csproj ./
+RUN dotnet restore
+
+# Copy source code
+COPY . .
+
+# Expose port
+EXPOSE 80
+
+# Use dotnet watch for hot reload in development
+CMD ["dotnet", "watch", "run", "--urls", "http://0.0.0.0:80"]

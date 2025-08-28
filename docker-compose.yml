@@ -1,0 +1,58 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: oxigin-postgres
+    environment:
+      POSTGRES_DB: oxigin_attendance
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - oxigin-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend/OxiginAttendance.Api
+      dockerfile: Dockerfile
+    container_name: oxigin-backend
+    env_file:
+      - .env.docker
+    ports:
+      - "5000:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - oxigin-network
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: oxigin-frontend
+    env_file:
+      - .env.docker
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    networks:
+      - oxigin-network
+
+volumes:
+  postgres_data:
+
+networks:
+  oxigin-network:
+    driver: bridge

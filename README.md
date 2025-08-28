@@ -9,6 +9,7 @@ A full-stack time and attendance management system built with modern technologie
 - **Frontend**: React TypeScript with Redux Toolkit
 - **UI**: Material-UI (MUI)
 - **Authentication**: JWT Bearer tokens
+- **Containerization**: Docker & Docker Compose
 
 ## Features
 
@@ -59,6 +60,32 @@ A full-stack time and attendance management system built with modern technologie
 - Date range tracking
 
 ## Getting Started
+
+### Option 1: Using Docker (Recommended)
+
+**Prerequisites:**
+- Docker and Docker Compose
+
+**Quick Start:**
+```bash
+git clone <repository-url>
+cd oxigin-attendance-v2
+
+# Start the application
+docker compose up --build
+
+# For development with live reload
+docker compose -f docker-compose.dev.yml up --build
+```
+
+**Access the application:**
+- Frontend: http://localhost:3000
+- Backend API: http://localhost:5000
+- API Documentation: http://localhost:5000/swagger
+
+For detailed Docker setup instructions, see [DOCKER.md](DOCKER.md).
+
+### Option 2: Local Development Setup
 
 ### Prerequisites
 - .NET 8.0 SDK
