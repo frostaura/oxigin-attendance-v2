@@ -1,0 +1,66 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    container_name: oxigin-postgres-prod
+    environment:
+      POSTGRES_DB: oxigin_attendance
+      POSTGRES_USER: oxigin_user
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-change_this_password}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U oxigin_user -d oxigin_attendance"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+    restart: unless-stopped
+    networks:
+      - oxigin-network
+
+  # Backend API
+  backend:
+    build:
+      context: ./backend/OxiginAttendance.Api
+      dockerfile: Dockerfile
+    container_name: oxigin-backend-prod
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Host=postgres;Database=oxigin_attendance;Username=oxigin_user;Password=${DB_PASSWORD:-change_this_password}"
+      JwtSettings__SecretKey: ${JWT_SECRET_KEY:-your-production-jwt-secret-key-minimum-32-characters}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "5000:80"
+    restart: unless-stopped
+    networks:
+      - oxigin-network
+
+  # Frontend React App
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: oxigin-frontend-prod
+    ports:
+      - "3000:80"
+    depends_on:
+      - backend
+    environment:
+      - REACT_APP_API_URL=${API_URL:-http://localhost:5000/api}
+      - REACT_APP_APP_NAME=${APP_NAME:-Oxigin Attendance v2}
+      - REACT_APP_COMPANY_NAME=${COMPANY_NAME:-Your Company Name}
+    restart: unless-stopped
+    networks:
+      - oxigin-network
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  oxigin-network:
+    driver: bridge

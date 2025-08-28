@@ -1,0 +1,12 @@
+bin/
+obj/
+*.user
+*.userosscache
+*.sln.docstates
+.vs/
+Migrations/
+*.db
+*.sqlite
+*.sqlite3
+appsettings.*.json
+!appsettings.json
