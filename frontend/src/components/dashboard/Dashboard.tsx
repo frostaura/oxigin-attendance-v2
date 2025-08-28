@@ -1,23 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Box,
-  Paper,
-  Typography,
-  Button,
-  Alert,
-  Chip,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogActions,
-  TextField,
-} from '@mui/material';
-import {
-  PlayArrow as ClockInIcon,
-  Stop as ClockOutIcon,
-  Schedule as ScheduleIcon,
-  Today as TodayIcon,
-} from '@mui/icons-material';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks';
 import {
   setLoading,
@@ -30,15 +11,46 @@ import {
 import { timeEntryApi } from '../../services/api';
 import { formatTime, formatDuration, getTodayDateString } from '../../utils/dateTime';
 import { TimeEntryStatus } from '../../types/timeEntry';
+import { 
+  Button, 
+  Alert, 
+  Badge, 
+  Card, 
+  CardHeader, 
+  CardTitle, 
+  CardContent, 
+  Typography,
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+  PlayIcon,
+  StopIcon,
+  ClockIcon,
+  CalendarIcon,
+  useToast,
+  SkeletonDashboard,
+} from '../../ui';
 
 const Dashboard: React.FC = () => {
   const [clockOutDialog, setClockOutDialog] = useState(false);
   const [notes, setNotes] = useState('');
   const [breakTime, setBreakTime] = useState('');
+  const [currentTime, setCurrentTime] = useState(new Date());
   
   const dispatch = useAppDispatch();
   const { user } = useAppSelector((state) => state.auth);
   const { currentTimeEntry, loading, error } = useAppSelector((state) => state.timeEntry);
+  const { addToast } = useToast();
+
+  // Update current time every second
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrentTime(new Date());
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
 
   useEffect(() => {
     const loadCurrentTimeEntry = async () => {
@@ -67,8 +79,21 @@ const Dashboard: React.FC = () => {
       
       dispatch(setCurrentTimeEntry(timeEntry));
       dispatch(addTimeEntry(timeEntry));
+      
+      // Show success toast
+      addToast({
+        variant: 'success',
+        title: 'Clocked In',
+        description: `Successfully clocked in at ${formatTime(new Date())}`,
+      });
     } catch (error: any) {
-      dispatch(setError(error.response?.data?.message || 'Failed to clock in'));
+      const message = error.response?.data?.message || 'Failed to clock in';
+      dispatch(setError(message));
+      addToast({
+        variant: 'error',
+        title: 'Clock In Failed',
+        description: message,
+      });
     } finally {
       dispatch(setLoading(false));
     }
@@ -96,100 +121,124 @@ const Dashboard: React.FC = () => {
       dispatch(setCurrentTimeEntry(null));
       dispatch(updateTimeEntry(timeEntry));
       setClockOutDialog(false);
+      
+      // Show success toast
+      addToast({
+        variant: 'success',
+        title: 'Clocked Out',
+        description: `Successfully clocked out at ${formatTime(new Date())}`,
+      });
     } catch (error: any) {
-      dispatch(setError(error.response?.data?.message || 'Failed to clock out'));
+      const message = error.response?.data?.message || 'Failed to clock out';
+      dispatch(setError(message));
+      addToast({
+        variant: 'error',
+        title: 'Clock Out Failed',
+        description: message,
+      });
     } finally {
       dispatch(setLoading(false));
     }
   };
 
   const isCurrentlyClockedIn = currentTimeEntry?.status === TimeEntryStatus.Active;
-  const currentTime = new Date();
+
+  // Show skeleton loading while loading
+  if (loading && !currentTimeEntry) {
+    return <SkeletonDashboard />;
+  }
 
   return (
-    <Box>
-      <Typography variant="h4" gutterBottom>
+    <div className="space-y-6">
+      <Typography variant="h3" className="text-gray-900 dark:text-white">
         Welcome back, {user?.firstName}!
       </Typography>
       
       {error && (
-        <Alert severity="error" sx={{ mb: 3 }} onClose={() => dispatch(clearError())}>
+        <Alert variant="error" onClose={() => dispatch(clearError())}>
           {error}
         </Alert>
       )}
 
-      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <div className="space-y-6">
         {/* Clock In/Out Card */}
-        <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
-          <Paper sx={{ p: 3, textAlign: 'center', minHeight: 200, flex: '1 1 300px' }} data-onboarding-target="time-tracking-card">
-            <Typography variant="h6" gutterBottom>
-              Time Tracking
-            </Typography>
-            
-            {isCurrentlyClockedIn ? (
-              <Box>
-                <Chip 
-                  label="Currently Clocked In" 
-                  color="success" 
-                  sx={{ mb: 2 }}
-                  icon={<ScheduleIcon />}
-                />
-                <Typography variant="body1" sx={{ mb: 1 }}>
-                  Clock In Time: {formatTime(currentTimeEntry.clockInTime)}
-                </Typography>
-                <Typography variant="body1" sx={{ mb: 3 }}>
-                  Current Time: {formatTime(currentTime)}
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="error"
-                  size="large"
-                  onClick={handleClockOutClick}
-                  disabled={loading}
-                  startIcon={<ClockOutIcon />}
-                >
-                  Clock Out
-                </Button>
-              </Box>
-            ) : (
-              <Box>
-                <Chip 
-                  label="Not Clocked In" 
-                  color="default" 
-                  sx={{ mb: 2 }}
-                />
-                <Typography variant="body1" sx={{ mb: 3 }}>
-                  Current Time: {formatTime(currentTime)}
-                </Typography>
-                <Button
-                  variant="contained"
-                  color="primary"
-                  size="large"
-                  onClick={handleClockIn}
-                  disabled={loading}
-                  startIcon={<ClockInIcon />}
-                >
-                  Clock In
-                </Button>
-              </Box>
-            )}
-          </Paper>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <Card data-onboarding-target="time-tracking-card">
+            <CardHeader className="text-center">
+              <CardTitle className="flex items-center justify-center gap-2">
+                <ClockIcon className="h-5 w-5" />
+                Time Tracking
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="text-center space-y-4">
+              {isCurrentlyClockedIn ? (
+                <>
+                  <Badge 
+                    label="Currently Clocked In" 
+                    variant="success"
+                    size="md"
+                    className="mb-4"
+                  />
+                  <div className="space-y-2">
+                    <Typography variant="body1">
+                      Clock In Time: {formatTime(currentTimeEntry.clockInTime)}
+                    </Typography>
+                    <Typography variant="body1">
+                      Current Time: {formatTime(currentTime)}
+                    </Typography>
+                  </div>
+                  <Button
+                    variant="destructive"
+                    size="lg"
+                    onClick={handleClockOutClick}
+                    disabled={loading}
+                    startIcon={<StopIcon />}
+                    className="mt-4"
+                  >
+                    Clock Out
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Badge 
+                    label="Not Clocked In" 
+                    variant="secondary"
+                    size="md"
+                    className="mb-4"
+                  />
+                  <Typography variant="body1" className="mb-4">
+                    Current Time: {formatTime(currentTime)}
+                  </Typography>
+                  <Button
+                    variant="primary"
+                    size="lg"
+                    onClick={handleClockIn}
+                    disabled={loading}
+                    startIcon={<PlayIcon />}
+                  >
+                    Clock In
+                  </Button>
+                </>
+              )}
+            </CardContent>
+          </Card>
 
           {/* Today's Summary Card */}
-          <Paper sx={{ p: 3, minHeight: 200, flex: '1 1 300px' }}>
-            <Typography variant="h6" gutterBottom>
-              <TodayIcon sx={{ mr: 1, verticalAlign: 'bottom' }} />
-              Today's Summary
-            </Typography>
-            
-            <Box sx={{ mt: 2 }}>
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <CalendarIcon className="h-5 w-5" />
+                Today's Summary
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-3">
               <Typography variant="body2" color="textSecondary">
                 Date: {getTodayDateString()}
               </Typography>
               
               {currentTimeEntry && (
-                <>
-                  <Typography variant="body2" sx={{ mt: 1 }}>
+                <div className="space-y-2">
+                  <Typography variant="body2">
                     Clock In: {formatTime(currentTimeEntry.clockInTime)}
                   </Typography>
                   
@@ -202,7 +251,7 @@ const Dashboard: React.FC = () => {
                         Total Hours: {formatDuration(currentTimeEntry.totalHours)}
                       </Typography>
                       {currentTimeEntry.overtimeHours && (
-                        <Typography variant="body2" color="orange">
+                        <Typography variant="body2" className="text-warning-600">
                           Overtime: {formatDuration(currentTimeEntry.overtimeHours)}
                         </Typography>
                       )}
@@ -210,83 +259,90 @@ const Dashboard: React.FC = () => {
                   )}
                   
                   {currentTimeEntry.notes && (
-                    <Typography variant="body2" sx={{ mt: 1 }}>
+                    <Typography variant="body2">
                       Notes: {currentTimeEntry.notes}
                     </Typography>
                   )}
-                </>
+                </div>
               )}
               
               {!currentTimeEntry && (
-                <Typography variant="body2" color="textSecondary" sx={{ mt: 1 }}>
+                <Typography variant="body2" color="textSecondary">
                   No time entry for today
                 </Typography>
               )}
-            </Box>
-          </Paper>
-        </Box>
+            </CardContent>
+          </Card>
+        </div>
 
         {/* Quick Actions Card */}
-        <Paper sx={{ p: 3 }} data-onboarding-target="quick-actions-card">
-          <Typography variant="h6" gutterBottom>
-            Quick Actions
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
-            <Button
-              variant="outlined"
-              onClick={() => window.location.href = '/time-entries'}
-              sx={{ flex: '1 1 200px' }}
-            >
-              View Time Entries
-            </Button>
-            <Button
-              variant="outlined"
-              onClick={() => window.location.href = '/reports'}
-              sx={{ flex: '1 1 200px' }}
-            >
-              View Reports
-            </Button>
-          </Box>
-        </Paper>
-      </Box>
+        <Card data-onboarding-target="quick-actions-card">
+          <CardHeader>
+            <CardTitle>Quick Actions</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="flex gap-4 flex-wrap">
+              <Button
+                variant="outline"
+                onClick={() => window.location.href = '/time-entries'}
+                className="flex-1 min-w-[200px]"
+              >
+                View Time Entries
+              </Button>
+              <Button
+                variant="outline"
+                onClick={() => window.location.href = '/reports'}
+                className="flex-1 min-w-[200px]"
+              >
+                View Reports
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
-      {/* Clock Out Dialog */}
-      <Dialog open={clockOutDialog} onClose={() => setClockOutDialog(false)} maxWidth="sm" fullWidth>
-        <DialogTitle>Clock Out</DialogTitle>
-        <DialogContent>
-          <TextField
-            autoFocus
-            margin="dense"
-            id="notes"
+      {/* Clock Out Modal */}
+      <Modal 
+        isOpen={clockOutDialog} 
+        onClose={() => setClockOutDialog(false)}
+        size="md"
+      >
+        <ModalHeader>Clock Out</ModalHeader>
+        <ModalBody className="space-y-4">
+          <Input
             label="Notes (optional)"
-            type="text"
-            fullWidth
-            variant="outlined"
             value={notes}
             onChange={(e) => setNotes(e.target.value)}
-            sx={{ mb: 2 }}
+            placeholder="Add any notes about your work session..."
           />
-          <TextField
-            margin="dense"
-            id="breakTime"
+          <Input
             label="Break Time (HH:MM, optional)"
-            type="text"
-            fullWidth
-            variant="outlined"
             value={breakTime}
             onChange={(e) => setBreakTime(e.target.value)}
             placeholder="00:30"
-            helperText="Enter break time in HH:MM format (e.g., 00:30 for 30 minutes)"
+            // helperText="Enter break time in HH:MM format (e.g., 00:30 for 30 minutes)"
           />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setClockOutDialog(false)}>Cancel</Button>
-          <Button onClick={handleClockOut} variant="contained" disabled={loading}>
+          <Typography variant="caption" color="textSecondary">
+            Enter break time in HH:MM format (e.g., 00:30 for 30 minutes)
+          </Typography>
+        </ModalBody>
+        <ModalFooter>
+          <Button 
+            variant="outline" 
+            onClick={() => setClockOutDialog(false)}
+          >
+            Cancel
+          </Button>
+          <Button 
+            variant="primary" 
+            onClick={handleClockOut} 
+            disabled={loading}
+          >
             Clock Out
           </Button>
-        </DialogActions>
-      </Dialog>
-    </Box>
+        </ModalFooter>
+      </Modal>
+    </div>
   );
 };
 

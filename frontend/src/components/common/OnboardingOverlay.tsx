@@ -1,22 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
-import {
-  Modal,
-  Box,
-  Paper,
-  Typography,
-  Button,
-  IconButton,
-  LinearProgress,
-  Backdrop,
-  Fade,
-  useTheme,
-} from '@mui/material';
-import {
-  Close as CloseIcon,
-  ArrowBack as PreviousIcon,
-  ArrowForward as NextIcon,
-  SkipNext as SkipIcon,
-} from '@mui/icons-material';
+import React, { useEffect, useState } from 'react';
 import { useAppSelector, useAppDispatch } from '../../utils/hooks';
 import {
   nextStep,
@@ -24,18 +6,29 @@ import {
   skipOnboarding,
   setCurrentPage,
 } from '../../store/onboardingSlice';
+import {
+  Modal,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Typography,
+  Button,
+  Progress,
+  CloseIcon,
+  ArrowLeftIcon,
+  ArrowRightIcon,
+  SkipIcon,
+} from '../../ui';
 
 interface OnboardingOverlayProps {
   currentPage: string;
 }
 
 const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({ currentPage }) => {
-  const theme = useTheme();
   const dispatch = useAppDispatch();
   const { isActive, currentStep, steps } = useAppSelector((state) => state.onboarding);
   const [targetElement, setTargetElement] = useState<HTMLElement | null>(null);
   const [highlightStyle, setHighlightStyle] = useState<any>({});
-  const overlayRef = useRef<HTMLDivElement>(null);
 
   const currentStepData = steps[currentStep];
   const progress = ((currentStep + 1) / steps.length) * 100;
@@ -57,9 +50,9 @@ const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({ currentPage }) =>
           width: rect.width + 16,
           height: rect.height + 16,
           borderRadius: '8px',
-          border: `3px solid ${theme.palette.primary.main}`,
+          border: '3px solid #2E90FA', // UntitledUI primary color
           background: 'transparent',
-          boxShadow: `0 0 0 2000px rgba(0, 0, 0, 0.5)`,
+          boxShadow: '0 0 0 2000px rgba(0, 0, 0, 0.5)',
           zIndex: 1299,
           pointerEvents: 'none',
           transition: 'all 0.3s ease-in-out',
@@ -75,7 +68,7 @@ const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({ currentPage }) =>
       setTargetElement(null);
       setHighlightStyle({});
     }
-  }, [currentStep, currentStepData, isActive, theme.palette.primary.main]);
+  }, [currentStep, currentStepData, isActive]);
 
   const handleNext = () => {
     dispatch(nextStep());
@@ -96,127 +89,81 @@ const OnboardingOverlay: React.FC<OnboardingOverlayProps> = ({ currentPage }) =>
     return null;
   }
 
-  const modalContent = (
-    <Box
-      sx={{
-        position: 'absolute',
-        top: '50%',
-        left: '50%',
-        transform: 'translate(-50%, -50%)',
-        width: { xs: '90%', sm: 480 },
-        maxHeight: '80vh',
-        overflow: 'auto',
-      }}
-    >
-      <Paper
-        elevation={8}
-        sx={{
-          p: 4,
-          borderRadius: 2,
-          position: 'relative',
-        }}
-      >
-        {/* Progress Bar */}
-        <Box sx={{ mb: 3 }}>
-          <Typography variant="caption" color="text.secondary" sx={{ mb: 1, display: 'block' }}>
-            Step {currentStep + 1} of {steps.length}
-          </Typography>
-          <LinearProgress 
-            variant="determinate" 
-            value={progress} 
-            sx={{ 
-              height: 6, 
-              borderRadius: 3,
-              backgroundColor: theme.palette.grey[200],
-              '& .MuiLinearProgress-bar': {
-                borderRadius: 3,
-              }
-            }} 
-          />
-        </Box>
-
-        {/* Close Button */}
-        <IconButton
-          onClick={handleSkip}
-          sx={{
-            position: 'absolute',
-            right: 8,
-            top: 8,
-            color: 'grey.500',
-          }}
-        >
-          <CloseIcon />
-        </IconButton>
-
-        {/* Content */}
-        <Typography variant="h5" component="h2" sx={{ mb: 2, pr: 4 }}>
-          {currentStepData.title}
-        </Typography>
-        
-        <Typography variant="body1" sx={{ mb: 4, color: 'text.secondary', lineHeight: 1.6 }}>
-          {currentStepData.content}
-        </Typography>
-
-        {/* Action Buttons */}
-        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-          <Button
-            onClick={handleSkip}
-            color="inherit"
-            startIcon={<SkipIcon />}
-            sx={{ color: 'text.secondary' }}
-          >
-            Skip Tour
-          </Button>
-          
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            {!isFirstStep && (
-              <Button
-                onClick={handlePrevious}
-                variant="outlined"
-                startIcon={<PreviousIcon />}
-              >
-                Previous
-              </Button>
-            )}
-            
-            <Button
-              onClick={handleNext}
-              variant="contained"
-              endIcon={!isLastStep ? <NextIcon /> : undefined}
-              sx={{ minWidth: 100 }}
-            >
-              {isLastStep ? 'Finish' : 'Next'}
-            </Button>
-          </Box>
-        </Box>
-      </Paper>
-    </Box>
-  );
-
   return (
     <>
       {/* Highlight overlay */}
       {targetElement && (
-        <Box sx={highlightStyle} />
+        <div style={highlightStyle} />
       )}
       
       {/* Main modal */}
-      <Modal
-        open={isActive}
+      <Modal 
+        isOpen={isActive} 
         onClose={handleSkip}
-        BackdropComponent={Backdrop}
-        BackdropProps={{
-          sx: {
-            backgroundColor: 'rgba(0, 0, 0, 0.7)',
-            backdropFilter: 'blur(2px)',
-          },
-        }}
+        size="md"
+        className="max-w-lg"
       >
-        <Fade in={isActive}>
-          <div ref={overlayRef}>
-            {modalContent}
+        <div className="relative">
+          {/* Progress Bar */}
+          <div className="mb-6">
+            <Typography variant="caption" color="textSecondary" className="mb-2 block">
+              Step {currentStep + 1} of {steps.length}
+            </Typography>
+            <Progress value={progress} className="h-2" />
           </div>
-        </Fade>
+
+          {/* Close Button */}
+          <Button
+            onClick={handleSkip}
+            variant="ghost"
+            size="icon"
+            className="absolute -top-2 -right-2 text-gray-500 hover:text-gray-700"
+          >
+            <CloseIcon className="h-4 w-4" />
+          </Button>
+
+          <ModalHeader className="pr-8">
+            {currentStepData.title}
+          </ModalHeader>
+          
+          <ModalBody>
+            <Typography variant="body1" color="textSecondary" className="leading-relaxed">
+              {currentStepData.content}
+            </Typography>
+          </ModalBody>
+
+          <ModalFooter className="flex justify-between items-center">
+            <Button
+              onClick={handleSkip}
+              variant="ghost"
+              startIcon={<SkipIcon className="h-4 w-4" />}
+              className="text-gray-600"
+            >
+              Skip Tour
+            </Button>
+            
+            <div className="flex gap-2">
+              {!isFirstStep && (
+                <Button
+                  onClick={handlePrevious}
+                  variant="outline"
+                  startIcon={<ArrowLeftIcon className="h-4 w-4" />}
+                >
+                  Previous
+                </Button>
+              )}
+              
+              <Button
+                onClick={handleNext}
+                variant="primary"
+                endIcon={!isLastStep ? <ArrowRightIcon className="h-4 w-4" /> : undefined}
+                className="min-w-[100px]"
+              >
+                {isLastStep ? 'Finish' : 'Next'}
+              </Button>
+            </div>
+          </ModalFooter>
+        </div>
       </Modal>
     </>
   );

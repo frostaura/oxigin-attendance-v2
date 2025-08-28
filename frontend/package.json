@@ -5,6 +5,7 @@
   "dependencies": {
     "@emotion/react": "^11.14.0",
     "@emotion/styled": "^11.14.1",
+    "@headlessui/react": "^2.2.7",
     "@mui/icons-material": "^7.3.1",
     "@mui/material": "^7.3.1",
     "@mui/x-date-pickers": "^8.10.2",
@@ -14,13 +15,19 @@
     "@testing-library/react": "^16.3.0",
     "@testing-library/user-event": "^13.5.0",
     "@types/jest": "^27.5.2",
+    "@untitledui/icons": "^0.0.19",
+    "autoprefixer": "^10.4.21",
     "axios": "^1.11.0",
+    "class-variance-authority": "^0.7.1",
+    "clsx": "^2.1.1",
     "dayjs": "^1.11.15",
+    "postcss": "^8.5.6",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-redux": "^9.2.0",
     "react-router-dom": "^7.8.2",
     "react-scripts": "5.0.1",
+    "tailwind-merge": "^3.3.1",
     "typescript": "^4.9.5",
     "web-vitals": "^2.1.4"
   },
@@ -54,6 +61,7 @@
     "@types/react": "^19.1.12",
     "@types/react-dom": "^19.1.8",
     "@types/react-router-dom": "^5.3.3",
-    "playwright": "^1.55.0"
+    "playwright": "^1.55.0",
+    "tailwindcss": "^3.4.17"
   }
 }
