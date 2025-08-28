@@ -1,22 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import {
-  Box,
-  Button,
-  TextField,
-  Typography,
-  Paper,
-  Container,
-  Alert,
-  CircularProgress,
-  Link,
-  Divider,
-  Chip,
-} from '@mui/material';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../utils/hooks';
 import { loginStart, loginSuccess, loginFailure, clearError } from '../../store/authSlice';
 import { authApi } from '../../services/api';
 import { LoginRequest } from '../../types/auth';
+import { Button, Input, Typography, Alert } from '../../ui';
 
 const Login: React.FC = () => {
   const [formData, setFormData] = useState<LoginRequest>({
@@ -72,137 +60,116 @@ const Login: React.FC = () => {
   };
 
   return (
-    <Container component="main" maxWidth="sm">
-      <Box
-        sx={{
-          marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-        }}
-      >
-        <Paper
-          elevation={3}
-          sx={{
-            padding: 4,
-            display: 'flex',
-            flexDirection: 'column',
-            alignItems: 'center',
-            width: '100%',
-          }}
-        >
-          <Typography component="h1" variant="h4" sx={{ mb: 3 }}>
-            Oxigin Attendance
-          </Typography>
-          
-          <Typography component="h2" variant="h5" sx={{ mb: 3 }}>
-            Sign In
-          </Typography>
+    <div className="min-h-screen bg-gray-50 flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-md w-full space-y-8">
+        <div className="bg-white rounded-2xl shadow-lg p-8">
+          <div className="text-center">
+            <Typography variant="h2" className="mb-2">
+              Oxigin Attendance
+            </Typography>
+            
+            <Typography variant="h4" className="mb-8 text-gray-600">
+              Sign In
+            </Typography>
+          </div>
 
           {error && (
-            <Alert severity="error" sx={{ width: '100%', mb: 2 }}>
+            <Alert variant="error" className="mb-6">
               {error}
             </Alert>
           )}
 
-          <Box component="form" onSubmit={handleSubmit} sx={{ width: '100%' }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              id="email"
+          <form onSubmit={handleSubmit} className="space-y-6">
+            <Input
               label="Email Address"
               name="email"
-              autoComplete="email"
-              autoFocus
+              type="email"
+              required
               value={formData.email}
               onChange={handleChange}
               disabled={loading}
+              placeholder="Enter your email"
             />
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              name="password"
+            
+            <Input
               label="Password"
+              name="password"
               type="password"
-              id="password"
-              autoComplete="current-password"
+              required
               value={formData.password}
               onChange={handleChange}
               disabled={loading}
+              placeholder="Enter your password"
             />
+            
             <Button
               type="submit"
-              fullWidth
-              variant="contained"
-              sx={{ mt: 3, mb: 2 }}
+              className="w-full"
+              size="lg"
               disabled={loading}
-              startIcon={loading && <CircularProgress size={20} />}
             >
               {loading ? 'Signing In...' : 'Sign In'}
             </Button>
 
             {/* Quick Access Demo Buttons */}
-            <Box sx={{ mt: 2, mb: 2 }}>
-              <Divider sx={{ mb: 2 }}>
-                <Chip label="Quick Demo Access" size="small" />
-              </Divider>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            <div className="mt-6">
+              <div className="relative">
+                <div className="absolute inset-0 flex items-center">
+                  <div className="w-full border-t border-gray-300" />
+                </div>
+                <div className="relative flex justify-center text-sm">
+                  <span className="px-2 bg-white text-gray-500">Quick Demo Access</span>
+                </div>
+              </div>
+              
+              <div className="mt-6 space-y-3">
                 <Button
-                  variant="outlined"
-                  size="small"
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-primary-600 border-primary-200"
                   onClick={() => handleQuickLogin('admin@oxigin.com', 'Admin@123')}
                   disabled={loading}
-                  sx={{ 
-                    textTransform: 'none',
-                    fontSize: '0.875rem',
-                    color: 'primary.main',
-                    borderColor: 'primary.main'
-                  }}
                 >
                   Administrator Demo (admin@oxigin.com)
                 </Button>
+                
                 <Button
-                  variant="outlined"
-                  size="small"
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-purple-600 border-purple-200"
                   onClick={() => handleQuickLogin('manager@oxigin.com', 'Manager@123')}
                   disabled={loading}
-                  sx={{ 
-                    textTransform: 'none',
-                    fontSize: '0.875rem',
-                    color: 'secondary.main',
-                    borderColor: 'secondary.main'
-                  }}
                 >
                   Manager Demo (manager@oxigin.com)
                 </Button>
+                
                 <Button
-                  variant="outlined"
-                  size="small"
+                  variant="outline"
+                  size="sm"
+                  className="w-full text-success-600 border-success-200"
                   onClick={() => handleQuickLogin('employee@oxigin.com', 'Employee@123')}
                   disabled={loading}
-                  sx={{ 
-                    textTransform: 'none',
-                    fontSize: '0.875rem',
-                    color: 'success.main',
-                    borderColor: 'success.main'
-                  }}
                 >
                   Employee Demo (employee@oxigin.com)
                 </Button>
-              </Box>
-            </Box>
+              </div>
+            </div>
 
-            <Box textAlign="center">
-              <Link component={RouterLink} to="/register" variant="body2">
-                Don't have an account? Sign Up
-              </Link>
-            </Box>
-          </Box>
-        </Paper>
-      </Box>
-    </Container>
+            <div className="text-center">
+              <Typography variant="body2" color="textSecondary">
+                Don't have an account?{' '}
+                <RouterLink 
+                  to="/register" 
+                  className="text-primary-600 hover:text-primary-700 font-medium"
+                >
+                  Sign up
+                </RouterLink>
+              </Typography>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
   );
 };
 
