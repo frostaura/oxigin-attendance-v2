@@ -121,7 +121,7 @@ const Dashboard: React.FC = () => {
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
         {/* Clock In/Out Card */}
         <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap' }}>
-          <Paper sx={{ p: 3, textAlign: 'center', minHeight: 200, flex: '1 1 300px' }}>
+          <Paper sx={{ p: 3, textAlign: 'center', minHeight: 200, flex: '1 1 300px' }} data-onboarding-target="time-tracking-card">
             <Typography variant="h6" gutterBottom>
               Time Tracking
             </Typography>
@@ -227,7 +227,7 @@ const Dashboard: React.FC = () => {
         </Box>
 
         {/* Quick Actions Card */}
-        <Paper sx={{ p: 3 }}>
+        <Paper sx={{ p: 3 }} data-onboarding-target="quick-actions-card">
           <Typography variant="h6" gutterBottom>
             Quick Actions
           </Typography>

@@ -1,11 +1,13 @@
 import { configureStore } from '@reduxjs/toolkit';
 import authReducer from './authSlice';
 import timeEntryReducer from './timeEntrySlice';
+import onboardingReducer from './onboardingSlice';
 
 export const store = configureStore({
   reducer: {
     auth: authReducer,
     timeEntry: timeEntryReducer,
+    onboarding: onboardingReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({
