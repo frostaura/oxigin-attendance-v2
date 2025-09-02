@@ -1,10 +1,10 @@
 # Oxigin Attendance v2
 
-A comprehensive, full-stack time and attendance management system designed for modern workplaces. Built with cutting-edge technologies to provide seamless employee time tracking, management reporting, and administrative controls.
+A comprehensive, full-stack crew management and time tracking system designed for service-based businesses. Built with cutting-edge technologies to provide seamless client order management, crew allocation, time tracking, and advanced reporting with email integration.
 
 ## 🌟 Overview
 
-Oxigin Attendance v2 is a robust solution that enables organizations to efficiently track employee working hours, manage overtime, generate comprehensive reports, and maintain accurate attendance records. The system supports role-based access control with distinct interfaces for employees, managers, and administrators.
+Oxigin Attendance v2 is a robust workforce management solution that enables service companies to efficiently manage client orders, allocate crew members, track working hours across multiple job sites, and provide comprehensive reporting. The system supports role-based access control with distinct interfaces for clients, employees, crew bosses, managers, and administrators. Key capabilities include client order placement, quote generation, crew allocation, job-specific time tracking, and automated email integration for timesheets and quotes.
 
 ## 🚀 Tech Stack
 
@@ -19,69 +19,132 @@ Oxigin Attendance v2 is a robust solution that enables organizations to efficien
 
 ## 🔐 Role-Based Access Control
 
-The system implements three distinct user roles with specific permissions and capabilities:
+The system implements five distinct user roles with specific permissions and capabilities:
 
-| Feature | Employee | Manager | Administrator |
-|---------|----------|---------|---------------|
+| Feature | Client | Employee | Crew Boss | Manager | Administrator |
+|---------|--------|----------|-----------|---------|---------------|
 | **Authentication** |
-| Login/Logout | ✅ | ✅ | ✅ |
-| View Profile | ✅ | ✅ | ✅ |
+| Login/Logout | ✅ | ✅ | ✅ | ✅ | ✅ |
+| View Profile | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Client Management** |
+| Place Job Orders | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Request Quotes | ✅ | ❌ | ❌ | ❌ | ❌ |
+| View Own Orders | ✅ | ❌ | ❌ | ✅ | ✅ |
+| Approve Quotes | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Receive Timesheets via Email | ✅ | ❌ | ❌ | ❌ | ❌ |
+| Receive Quotes via Email | ✅ | ❌ | ❌ | ❌ | ❌ |
 | **Time Tracking** |
-| Clock In/Out | ✅ | ✅ | ✅ |
-| View Active Session | ✅ | ✅ | ✅ |
-| View Personal Time Entries | ✅ | ✅ | ✅ |
-| Personal Time Reports | ✅ | ✅ | ✅ |
-| Add Notes to Entries | ✅ | ✅ | ✅ |
+| Clock In/Out | ❌ | ✅ | ✅ | ✅ | ✅ |
+| View Active Session | ❌ | ✅ | ✅ | ✅ | ✅ |
+| View Personal Time Entries | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Personal Time Reports | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Add Notes to Entries | ❌ | ✅ | ✅ | ✅ | ✅ |
+| **Crew Management** |
+| Allocate Staff to Jobs | ❌ | ❌ | ✅ | ✅ | ✅ |
+| View Allocated Staff | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Manage Crew Timesheets | ❌ | ❌ | ✅ | ✅ | ✅ |
+| **Job Management** |
+| View Assigned Jobs | ❌ | ✅ | ✅ | ✅ | ✅ |
+| Confirm Job Completion | ❌ | ❌ | ✅ | ✅ | ✅ |
+| Generate Job Reports | ❌ | ❌ | ✅ | ✅ | ✅ |
 | **Management Features** |
-| View All Employees Reports | ❌ | ✅ | ✅ |
-| Create Time Entries for Others | ❌ | ✅ | ✅ |
-| Edit Any Time Entry | ❌ | ✅ | ✅ |
-| Delete Any Time Entry | ❌ | ✅ | ✅ |
+| View All Jobs | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Assign Crew Bosses | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Create Time Entries for Others | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Edit Any Time Entry | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Delete Any Time Entry | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Email Timesheets to Clients | ❌ | ❌ | ❌ | ✅ | ✅ |
+| Email Quotes to Clients | ❌ | ❌ | ❌ | ✅ | ✅ |
 | **Administration** |
-| User Management | ❌ | ❌ | ✅ |
-| Role Assignment | ❌ | ❌ | ✅ |
-| System Configuration | ❌ | ❌ | ✅ |
-| Database Operations | ❌ | ❌ | ✅ |
+| User Management | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Role Assignment | ❌ | ❌ | ❌ | ❌ | ✅ |
+| System Configuration | ❌ | ❌ | ❌ | ❌ | ✅ |
+| Database Operations | ❌ | ❌ | ❌ | ❌ | ✅ |
 
 ## 🎯 User Role Use Cases
 
-### 👤 Employee Role Features
-**Core Capabilities**: Personal time tracking and reporting
+### 👤 Client Role Features
+**Core Capabilities**: Order placement, quote management, and receiving reports
 
 #### Available Features:
-- **✅ Daily Time Tracking**: Clock in/out with a single click
-- **✅ Break Management**: Track break times automatically or manually
-- **✅ Location Tracking**: Optional location logging for remote/field work
-- **✅ Personal Reports**: View individual time reports and work history
-- **✅ Notes & Context**: Add notes to time entries for project tracking
+- **✅ Job Order Placement**: Submit orders for crew/staff with site details, event names, and purchase order numbers
+- **✅ Quote Requests**: Request quotes for specific events and crew requirements
+- **✅ Order Tracking**: Monitor status of submitted orders and quotes
+- **✅ Quote Approval**: Review and approve/reject quotes for ordered services
+- **✅ Email Integration**: Receive timesheets and quotes via email automatically
+- **✅ Site Management**: Specify work sites and event details for each order
+- **✅ Order History**: View complete history of orders, quotes, and completed jobs
+
+#### API Access:
+- `POST /api/auth/login` - Authentication
+- `GET /api/auth/me` - View profile
+- `POST /api/orders` - Create new job orders
+- `POST /api/quotes/request` - Request quotes
+- `GET /api/orders` - View own orders
+- `PUT /api/quotes/{id}/approve` - Approve quotes
+- `GET /api/timesheets/client` - View client timesheets
+
+### 👤 Employee Role Features
+**Core Capabilities**: Job-specific time tracking and viewing assigned work
+
+#### Available Features:
+- **✅ Job-Based Time Tracking**: Clock in/out for specific jobs and events
+- **✅ Assigned Job Viewing**: View jobs and events assigned to them
+- **✅ Location Tracking**: Track work location for different job sites
+- **✅ Job-Specific Reports**: View time reports organized by job/event
+- **✅ Notes & Context**: Add notes to time entries for specific jobs
 - **✅ Session Monitoring**: View current active time entry status
 
 #### API Access:
 - `POST /api/auth/login` - Authentication
 - `GET /api/auth/me` - View profile
-- `POST /api/timeentry/clock-in` - Start work session
+- `POST /api/timeentry/clock-in` - Start work session for specific job
 - `POST /api/timeentry/clock-out` - End work session
 - `GET /api/timeentry/active` - Check active session
 - `GET /api/timeentry` - View personal entries
-- `GET /api/timeentry/report` - Personal time reports
-- `GET /api/timeentry/{id}` - View specific entry (own only)
+- `GET /api/jobs/assigned` - View assigned jobs
+
+### 👨‍🔧 Crew Boss Role Features
+**Core Capabilities**: Staff allocation, crew management, and job oversight
+
+#### Available Features:
+- **✅ Staff Allocation**: Assign employees to specific jobs and events
+- **✅ Crew Management**: Oversee crew members and their work assignments
+- **✅ Job Oversight**: Monitor progress of assigned jobs and crew performance
+- **✅ Crew Timesheets**: Generate and manage timesheets for allocated staff
+- **✅ Job Reporting**: Create job-specific reports and completion summaries
+- **✅ Personal Time Tracking**: Track own work time like regular employees
+
+#### API Access:
+- All Employee API access
+- `POST /api/jobs/{id}/allocate-staff` - Allocate staff to jobs
+- `GET /api/crew/assigned` - View allocated crew members
+- `PUT /api/jobs/{id}/status` - Update job status
+- `GET /api/timesheets/crew` - Generate crew timesheets
+- `POST /api/jobs/{id}/complete` - Mark job as completed
 
 ### 👨‍💼 Manager Role Features
-**Core Capabilities**: All Employee features + Team management and oversight
+**Core Capabilities**: All previous role features + Job management, crew allocation, and client communication
 
 #### Additional Features:
-- **✅ Team Oversight**: Monitor team attendance and working hours
-- **✅ Organization Reports**: Access comprehensive reports for all employees
-- **✅ Time Entry Management**: Create, edit, or delete any team member time entries
-- **✅ Overtime Monitoring**: Track and manage employee overtime across the organization
-- **✅ Period Analysis**: Generate detailed reports for specific date ranges
-- **✅ Administrative Actions**: Manage time entries for operational needs
+- **✅ Job Management**: Create, monitor, and manage all active jobs across the organization
+- **✅ Crew Boss Assignment**: Assign crew bosses to specific jobs and events
+- **✅ Organization Reports**: Access comprehensive reports for all jobs, clients, and crew
+- **✅ Client Communication**: Email timesheets and quotes directly to clients
+- **✅ Time Entry Management**: Create, edit, or delete any time entries across all jobs
+- **✅ Multi-Dimensional Reporting**: Generate reports by employee, job, client, crew boss, and date ranges
+- **✅ Job Status Monitoring**: Track what jobs are active, completed, or pending
 
 #### Additional API Access:
-- `GET /api/timeentry/report/all` - All employees reports
-- `POST /api/timeentry` - Create entries for any user
-- `PUT /api/timeentry/{id}` - Edit any time entry
-- `DELETE /api/timeentry/{id}` - Delete any time entry
+- All Crew Boss API access
+- `GET /api/jobs/all` - View all jobs in organization
+- `POST /api/jobs/{id}/assign-crewboss` - Assign crew boss to job
+- `GET /api/reports/comprehensive` - Organization-wide reports
+- `POST /api/email/timesheet` - Email timesheets to clients
+- `POST /api/email/quote` - Email quotes to clients
+- `GET /api/timesheets/by-client` - Client-specific timesheets
+- `GET /api/timesheets/by-job` - Job-specific timesheets
+- `GET /api/timesheets/by-crewboss` - Crew boss specific timesheets
 
 ### 👨‍💻 Administrator Role Features
 **Core Capabilities**: All Manager features + Full system administration
@@ -108,36 +171,70 @@ The system comes pre-configured with demo accounts for testing each role:
 |------|-------|----------|-------------|------------|
 | Administrator | `admin@oxigin.com` | `Admin@123` | `ADMIN001` | IT |
 | Manager | `manager@oxigin.com` | `Manager@123` | `MGR001` | Operations |
-| Employee | `employee@oxigin.com` | `Employee@123` | `EMP001` | Operations |
+| Crew Boss | `crewboss@oxigin.com` | `CrewBoss@123` | `CB001` | Field Operations |
+| Employee | `employee@oxigin.com` | `Employee@123` | `EMP001` | Field Work |
+| Client | `client@example.com` | `Client@123` | `CLIENT001` | External |
 
 ## ✅ Features
 
 ### Core Functionality
 - ✅ **User Authentication**: Secure login/register with JWT tokens
-- ✅ **Role-Based Access Control**: Employee, Manager, Administrator roles
+- ✅ **Multi-Role Access Control**: Client, Employee, Crew Boss, Manager, Administrator roles
 - ✅ **Real-Time Clock Interface**: Live clock display with time zone support
-- ✅ **One-Click Time Tracking**: Simple clock in/out functionality
+- ✅ **Job-Based Time Tracking**: Track time against specific jobs and events
 - ✅ **Automatic Calculations**: Total hours, break time, and overtime
 - ✅ **Responsive Design**: Mobile-friendly Material-UI interface
 - ✅ **PostgreSQL Integration**: Robust data persistence and relationships
 - ✅ **API Documentation**: Comprehensive Swagger documentation
 
+### Client Management Features
+- ✅ **Client Portal**: Dedicated interface for clients to manage orders
+- ✅ **Job Order Placement**: Submit orders with site details, event names, and PO numbers
+- ✅ **Quote Request System**: Request and approve quotes for services
+- ✅ **Email Integration**: Automated email delivery of timesheets and quotes
+- ✅ **Order Tracking**: Monitor order status from submission to completion
+- ✅ **Site Management**: Specify and track multiple work sites per order
+
+### Job & Event Management
+- ✅ **Event Scheduling**: Schedule events with dates, times, and site information
+- ✅ **Job Status Tracking**: Monitor jobs from quote to completion
+- ✅ **Site-Based Organization**: Organize work by specific sites and locations
+- ✅ **PO Number Tracking**: Track purchase orders throughout job lifecycle
+- ✅ **Multi-Site Support**: Handle multiple work sites simultaneously
+
+### Crew Management Features  
+- ✅ **Crew Boss Allocation**: Assign crew bosses to specific jobs
+- ✅ **Staff Allocation**: Crew bosses assign team members to jobs
+- ✅ **Hierarchical Management**: Client → Manager → Crew Boss → Employee workflow
+- ✅ **Crew Performance Monitoring**: Track crew efficiency and job progress
+- ✅ **Resource Allocation**: Optimize staff assignments across multiple jobs
+
 ### Time Management Features
-- ✅ **Active Session Tracking**: Monitor current clocked-in status
+- ✅ **Job-Specific Time Tracking**: Track time against specific jobs and events
+- ✅ **Active Session Tracking**: Monitor current clocked-in status per job
 - ✅ **Break Time Management**: Track and calculate break periods
 - ✅ **Overtime Calculation**: Automatic overtime detection (8+ hours/day)
-- ✅ **Location Logging**: Optional location tracking for entries
-- ✅ **Notes & Comments**: Add context to time entries
+- ✅ **Location Logging**: GPS and manual location tracking for job sites
+- ✅ **Notes & Comments**: Add job-specific context to time entries
 - ✅ **Status Management**: Active, Completed, Cancelled entry states
-- ✅ **Historical Tracking**: Complete audit trail of time entries
+- ✅ **Historical Tracking**: Complete audit trail of time entries by job
 
-### Reporting & Analytics
-- ✅ **Personal Reports**: Individual employee time summaries (All roles)
-- ✅ **Management Reports**: Team and organization-wide analytics (Manager/Administrator only)
-- ✅ **Date Range Filtering**: Flexible report period selection (All roles)
-- ✅ **Detailed Breakdowns**: Total hours, overtime, and days worked (All roles)
-- ✅ **Real-Time Data**: Live updates and current status displays (All roles)
-- ✅ **Cross-Employee Access**: View any employee's data (Manager/Administrator only)
+### Advanced Reporting & Analytics
+- ✅ **Multi-Dimensional Reports**: Reports by employee, job, client, crew boss, and date ranges
+- ✅ **Client-Specific Timesheets**: Dedicated reports for each client's jobs
+- ✅ **Job-Based Analytics**: Performance metrics and time analysis per job
+- ✅ **Crew Performance Reports**: Analyze crew boss and team efficiency
+- ✅ **Date Range Filtering**: Flexible report period selection (day-to-day basis)
+- ✅ **Real-Time Monitoring**: Live updates on active jobs and current staff
+- ✅ **Export Capabilities**: Generate reports for email delivery to clients
+- ✅ **Overtime Analysis**: Track overtime patterns across jobs and crew
+
+### Email Integration System
+- ✅ **Automated Timesheet Delivery**: Email timesheets directly to clients
+- ✅ **Quote Distribution**: Send quotes via email with approval links
+- ✅ **Report Scheduling**: Automated delivery of regular reports
+- ✅ **Notification System**: Email alerts for job status changes
+- ✅ **Custom Templates**: Branded email templates for professional communication
 
 ## 📖 Role-Based User Workflows
 
