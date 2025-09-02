@@ -1163,7 +1163,7 @@ cd backend/OxiginAttendance.Api
 # Install dependencies
 dotnet restore
 
-# Update connection string in appsettings.json
+# Update configuration in appsettings.json
 ```
 
 **Configure `appsettings.json`**:
@@ -1178,6 +1178,21 @@ dotnet restore
     "Audience": "OxiginAttendanceClient",
     "ExpireDays": 7
   },
+  "EmailSettings": {
+    "SmtpServer": "smtp.gmail.com",
+    "SmtpPort": 587,
+    "EnableSsl": true,
+    "FromEmail": "noreply@yourcompany.com",
+    "FromName": "Oxigin Attendance System",
+    "Username": "your-email@gmail.com", 
+    "Password": "your-app-specific-password"
+  },
+  "ClientPortal": {
+    "BaseUrl": "https://portal.yourcompany.com",
+    "AllowSelfRegistration": false,
+    "RequireOrderApproval": true,
+    "DefaultCurrency": "USD"
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",
@@ -1187,6 +1202,12 @@ dotnet restore
   "AllowedHosts": "*"
 }
 ```
+
+**Email Configuration Notes**:
+- For Gmail: Enable 2-factor authentication and use an app-specific password
+- For Outlook: Use your regular credentials or app password
+- For custom SMTP: Configure according to your email provider's settings
+- Test email configuration with a simple test message before production use
 
 **Apply Database Migrations**:
 ```bash
@@ -1220,8 +1241,23 @@ cp .env.example .env.local  # Create if doesn't exist
 
 **Configure `.env.local`**:
 ```env
+# API Configuration
 REACT_APP_API_URL=https://localhost:7017/api
 REACT_APP_APP_NAME=Oxigin Attendance v2
+
+# Client Portal
+REACT_APP_CLIENT_PORTAL_URL=https://localhost:3000
+REACT_APP_SUPPORT_EMAIL=support@yourcompany.com
+
+# Feature Flags
+REACT_APP_ENABLE_EMAIL_INTEGRATION=true
+REACT_APP_ENABLE_QUOTE_SYSTEM=true
+REACT_APP_ENABLE_JOB_MANAGEMENT=true
+REACT_APP_DEFAULT_TIMEZONE=America/New_York
+
+# UI Settings
+REACT_APP_THEME_PRIMARY_COLOR=#1976d2
+REACT_APP_DEFAULT_CURRENCY=USD
 ```
 
 **Start Frontend Development Server**:
@@ -1232,13 +1268,35 @@ npm start
 
 #### 5. Initial Login
 
-The system creates a default administrator account on first run:
+The system creates default accounts for all roles on first run:
 
-**Default Admin Credentials**:
-- **Email**: `admin@oxigin.com`
-- **Password**: `Admin@123`
+**Default Account Credentials**:
+- **Administrator**: `admin@oxigin.com` / `Admin@123`
+- **Manager**: `manager@oxigin.com` / `Manager@123`  
+- **Crew Boss**: `crewboss@oxigin.com` / `CrewBoss@123`
+- **Employee**: `employee@oxigin.com` / `Employee@123`
+- **Client**: `client@example.com` / `Client@123`
 
-⚠️ **Important**: Change the default password immediately in production!
+⚠️ **Important**: Change all default passwords immediately in production!
+
+#### 6. Email System Testing
+
+After setup, test the email integration:
+
+```bash
+# Test email configuration (optional step)
+curl -X POST https://localhost:7017/api/email/test \
+  -H "Content-Type: application/json" \
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \
+  -d '{"testEmail": "your-email@example.com"}'
+```
+
+**Email Setup Verification**:
+1. Login as Manager (`manager@oxigin.com`)
+2. Create a test job order
+3. Generate and email a sample timesheet
+4. Verify email delivery and formatting
+5. Check email logs in the system for any issues
 
 ### Development Workflow
 
@@ -1399,11 +1457,45 @@ frontend/src/
     "AllowBackdatedEntries": true,    // Allow creating past entries
     "RequireLocation": false          // Require location for clock in/out
   },
+  "EmailSettings": {
+    "SmtpServer": "smtp.gmail.com",           // Email server address
+    "SmtpPort": 587,                          // SMTP port (587 for TLS)
+    "EnableSsl": true,                        // Enable SSL/TLS
+    "FromEmail": "noreply@yourcompany.com",   // Sender email address
+    "FromName": "Oxigin Attendance System",   // Sender display name
+    "Username": "your-email@gmail.com",       // SMTP username
+    "Password": "your-app-specific-password", // SMTP password or app password
+    "MaxRetryAttempts": 3,                    // Email retry attempts
+    "RetryDelayMinutes": 5                    // Delay between retries
+  },
+  "ClientPortal": {
+    "BaseUrl": "https://portal.yourcompany.com", // Client portal URL
+    "AllowSelfRegistration": false,              // Allow clients to register
+    "RequireOrderApproval": true,                // Require manager approval for orders
+    "DefaultCurrency": "USD",                    // Default currency for quotes
+    "AutoGenerateOrderNumbers": true,            // Auto-generate order numbers
+    "OrderNumberPrefix": "ORD"                   // Prefix for order numbers
+  },
+  "JobManagement": {
+    "AutoAssignJobs": false,                     // Auto-assign jobs to available crew bosses
+    "RequireCrewBossApproval": true,            // Crew boss must approve job assignments  
+    "MaxJobsPerCrewBoss": 10,                   // Maximum concurrent jobs per crew boss
+    "DefaultJobBufferHours": 2,                 // Buffer time between jobs
+    "AllowOverlappingJobs": false               // Allow crew to work multiple jobs simultaneously
+  },
+  "Reporting": {
+    "DefaultReportFormat": "PDF",               // Default format for generated reports
+    "ReportRetentionDays": 365,                // How long to keep generated reports
+    "AutoEmailFrequency": "Weekly",             // Auto-email frequency (Daily, Weekly, Monthly)
+    "IncludePhotosInReports": true,            // Include job site photos in reports
+    "EnableClientReportAccess": true            // Allow clients to access reports directly
+  },
   "Logging": {
     "LogLevel": {
       "Default": "Information",
       "Microsoft.AspNetCore": "Warning",
-      "Microsoft.EntityFrameworkCore": "Warning"
+      "Microsoft.EntityFrameworkCore": "Warning",
+      "EmailService": "Debug"                   // Detailed email logging
     }
   }
 }
@@ -1420,14 +1512,44 @@ REACT_APP_APP_NAME=Oxigin Attendance v2
 REACT_APP_VERSION=2.0.0
 REACT_APP_COMPANY_NAME=Your Company Name
 
+# Client Portal Settings
+REACT_APP_CLIENT_PORTAL_URL=https://portal.yourcompany.com
+REACT_APP_ENABLE_CLIENT_REGISTRATION=false
+REACT_APP_SUPPORT_EMAIL=support@yourcompany.com
+REACT_APP_SUPPORT_PHONE=+1-800-555-0123
+
 # Feature Flags
 REACT_APP_ENABLE_LOCATION_TRACKING=true
 REACT_APP_ENABLE_BREAK_TRACKING=true
+REACT_APP_ENABLE_JOB_PHOTOS=true
+REACT_APP_ENABLE_EMAIL_INTEGRATION=true
+REACT_APP_ENABLE_QUOTE_SYSTEM=true
 REACT_APP_DEFAULT_TIMEZONE=America/New_York
+
+# Email Integration
+REACT_APP_EMAIL_TEMPLATES_ENABLED=true
+REACT_APP_AUTO_EMAIL_TIMESHEETS=true
+REACT_APP_EMAIL_LOGO_URL=https://yourcompany.com/logo.png
+
+# Job Management
+REACT_APP_MAX_CREW_PER_JOB=20
+REACT_APP_DEFAULT_JOB_DURATION_HOURS=8
+REACT_APP_ENABLE_GPS_TRACKING=true
+REACT_APP_REQUIRE_JOB_PHOTOS=false
 
 # UI Configuration
 REACT_APP_THEME_PRIMARY_COLOR=#1976d2
 REACT_APP_ITEMS_PER_PAGE=10
+REACT_APP_ENABLE_DARK_MODE=true
+REACT_APP_DEFAULT_CURRENCY=USD
+REACT_APP_DATE_FORMAT=MM/DD/YYYY
+REACT_APP_TIME_FORMAT=12-hour
+
+# Reporting
+REACT_APP_DEFAULT_REPORT_FORMAT=PDF
+REACT_APP_ENABLE_EXCEL_EXPORT=true
+REACT_APP_ENABLE_CSV_EXPORT=true
+REACT_APP_MAX_REPORT_RANGE_DAYS=365
 ```
 
 ### Security Configuration
@@ -1440,23 +1562,43 @@ REACT_APP_ITEMS_PER_PAGE=10
 
 #### Role-Based Permissions
 ```csharp
-// Employee permissions
-- View own time entries
-- Clock in/out
-- View personal reports
-- Update own profile
+// Client permissions
+- View and create own job orders
+- Request and approve quotes
+- Receive email notifications and reports
+- Access order history and status
+- Submit feedback and ratings
 
-// Manager permissions (includes Employee permissions)
-- View team time entries
-- Create/edit/delete team time entries
-- Generate team reports
-- View team member profiles
+// Employee permissions (includes basic user permissions)
+- View assigned jobs and schedules
+- Clock in/out for specific jobs
+- View job-specific time entries and reports
+- Upload job site photos and notes
+- View personal performance metrics
+
+// Crew Boss permissions (includes Employee permissions)
+- Allocate staff to assigned jobs
+- View and manage crew member time entries
+- Create and modify job assignments
+- Generate crew-specific reports
+- Communicate with clients and management
+- Mark jobs as completed
+
+// Manager permissions (includes Crew Boss permissions)
+- Create and assign jobs to crew bosses
+- Generate and email quotes to clients
+- View organization-wide reports and analytics
+- Manage all time entries and corrections
+- Email timesheets and reports to clients
+- Access financial and performance dashboards
 
 // Administrator permissions (includes all permissions)
-- Full system access
-- User management
-- System configuration
-- Organization-wide reports
+- Full system access and configuration
+- User management and role assignment
+- Email system configuration and monitoring
+- Database operations and system maintenance
+- Integration management with external systems
+- System security and compliance management
 ```
 
 ### Database Configuration
@@ -1622,48 +1764,137 @@ public class TimeEntryAuthorizationHandler : AuthorizationHandler<TimeEntryRequi
 
 ## 🔮 Future Enhancements
 
-### Planned Features
-- [ ] **Leave Request Management System**
-  - Employee leave request submission
-  - Manager approval workflow
-  - Leave balance tracking
-  - Calendar integration
-  - Email notifications for requests
+### Planned Core Features
+- [ ] **Advanced Quote Management**
+  - Multi-tier pricing structures
+  - Equipment rental integration
+  - Subcontractor management
+  - Automatic quote generation based on job requirements
+  - Quote comparison and competitive analysis
 
-- [ ] **Advanced Reporting & Analytics**
-  - Interactive charts and graphs
-  - Attendance trend analysis
-  - Productivity metrics
-  - Export to PDF/Excel formats
-  - Scheduled report generation
+- [ ] **Enhanced Client Portal**  
+  - Real-time job progress tracking
+  - Photo and document uploads from job sites
+  - Client feedback and rating system
+  - Integration with client billing systems
+  - Mobile client app for iOS and Android
 
-- [ ] **Employee Management Interface**
-  - Employee directory
-  - Bulk user operations
-  - Department/team management
-  - Employee profile management
-  - Organizational hierarchy
+- [ ] **Advanced Crew Management**
+  - Skills-based staff matching for jobs
+  - Crew performance analytics and ratings
+  - Automated crew scheduling optimization
+  - GPS tracking for crew location verification
+  - Crew communication tools (chat, notifications)
 
-- [ ] **Enhanced Time Tracking**
-  - Project/task-based time tracking
-  - Bulk time entry operations
-  - Time tracking templates
-  - Geolocation-based clock in/out
-  - Mobile app support
+- [ ] **Comprehensive Reporting Suite**
+  - Financial performance dashboards
+  - Client profitability analysis
+  - Crew efficiency benchmarking
+  - Predictive analytics for resource planning
+  - Custom report builder with drag-and-drop interface
 
-- [ ] **Notification System**
-  - Real-time browser notifications
-  - Email notifications
-  - SMS alerts (optional)
-  - Slack/Teams integration
-  - Custom notification rules
+- [ ] **Email and Communication Enhancements**
+  - SMS notifications for critical updates
+  - WhatsApp integration for crew communication
+  - Automated client satisfaction surveys
+  - Marketing email campaigns for existing clients
+  - Voice notification system for urgent alerts
 
-- [ ] **Advanced Features**
-  - Audit trail and activity logging
-  - Advanced filtering and search
-  - Custom fields for time entries
-  - Multi-language support
-  - Dark/light theme toggle
+### Advanced Job Management
+- [ ] **Multi-Site Job Support**
+  - Jobs spanning multiple locations
+  - Site-to-site crew transfers
+  - Equipment tracking across sites
+  - Weather-based job rescheduling
+  - Site safety and compliance tracking
+
+- [ ] **Resource Management**
+  - Equipment inventory and allocation
+  - Vehicle fleet management
+  - Material and supply tracking
+  - Vendor and supplier integration
+  - Cost tracking by resource type
+
+- [ ] **Quality Control System**
+  - Job completion checklists
+  - Photo documentation requirements  
+  - Client sign-off workflows
+  - Quality inspection reports
+  - Issue escalation procedures
+
+### Integration and Automation
+- [ ] **Third-Party Integrations**
+  - QuickBooks and accounting software sync
+  - Google Calendar and Outlook integration
+  - CRM system connections (Salesforce, HubSpot)
+  - Weather API for job planning
+  - Mapping and GPS services integration
+
+- [ ] **Workflow Automation**
+  - Automated job assignment based on crew availability
+  - Smart scheduling with conflict detection
+  - Automatic invoice generation from timesheets
+  - Expense report automation
+  - Contract renewal notifications
+
+- [ ] **AI and Machine Learning**
+  - Predictive crew scheduling
+  - Job duration estimation based on historical data
+  - Automated anomaly detection in timesheets
+  - Client behavior analysis and recommendations
+  - Intelligent quote pricing suggestions
+
+### Technical Improvements
+- [ ] **Performance and Scalability**
+  - Database optimization and indexing
+  - Caching layer implementation
+  - Load balancing and horizontal scaling
+  - CDN integration for file uploads
+  - Real-time sync across multiple devices
+
+- [ ] **Security Enhancements**
+  - Two-factor authentication (2FA)
+  - Single sign-on (SSO) integration
+  - Advanced audit logging
+  - Data encryption at rest and in transit
+  - Regular security assessments and compliance
+
+- [ ] **Mobile Applications**
+  - Native iOS app for field crews
+  - Native Android app for field crews
+  - Offline functionality with data sync
+  - Push notifications for job updates
+  - Barcode scanning for equipment tracking
+
+### Analytics and Intelligence
+- [ ] **Business Intelligence Dashboard**
+  - Executive-level KPI monitoring
+  - Revenue and profit trend analysis
+  - Market opportunity identification
+  - Competitive analysis tools
+  - Seasonal pattern recognition
+
+- [ ] **Operational Analytics**
+  - Crew productivity benchmarking
+  - Job completion time analysis
+  - Client satisfaction correlation studies
+  - Equipment utilization reports
+  - Cost center profitability analysis
+
+### Compliance and Certification
+- [ ] **Industry Compliance**
+  - OSHA safety compliance tracking
+  - DOT regulations for transportation
+  - Union labor compliance monitoring
+  - Environmental regulation adherence
+  - Industry-specific certification tracking
+
+- [ ] **Documentation Management**
+  - Digital contract management
+  - Insurance certificate tracking
+  - Employee certification monitoring
+  - Safety training record keeping
+  - Compliance audit preparation tools
 
 ### Technical Improvements
 - [ ] **Testing Infrastructure**
