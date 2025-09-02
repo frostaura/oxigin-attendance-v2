@@ -238,108 +238,191 @@ The system comes pre-configured with demo accounts for testing each role:
 
 ## 📖 Role-Based User Workflows
 
-### 👤 Employee Daily Workflow
-**Available Features**: Personal time tracking, viewing own records, personal reports
+### 🏢 Client Daily Workflow
+**Available Features**: Order placement, quote management, receiving timesheets and quotes via email
 
-#### 1. Starting Your Work Day (Employee Only)
+#### 1. Placing Job Orders (Client Only)
+```
+1. Login to client portal using client credentials
+2. Navigate to "New Order" section
+3. Fill out order details:
+   - Site information and address
+   - Event name and description
+   - Purchase order number
+   - Required dates and times
+   - Number of crew members needed
+   - Special requirements or notes
+4. Submit order (triggers automatic notification to managers)
+5. Receive confirmation email with order details
+```
+
+#### 2. Quote Management (Client Only)
+```
+1. View pending quote requests in client dashboard
+2. Review detailed quote information:
+   - Crew requirements and rates
+   - Total estimated cost
+   - Timeline and deliverables
+3. Approve or request modifications to quotes
+4. Receive confirmation of approved jobs
+5. Track job progress through client portal
+```
+
+#### 3. Receiving Reports and Communication (Client Only)  
+```
+1. Receive automated timesheet emails for completed jobs
+2. Review detailed crew time reports by job
+3. Receive quote emails for new order requests
+4. Access historical reports for past jobs
+5. Download timesheets and invoicing documentation
+```
+
+### 👤 Employee Daily Workflow
+**Available Features**: Job-specific time tracking, viewing assigned work
+
+#### 1. Starting Work on Assigned Jobs (Employee Only)
 ```
 1. Login to the system using employee credentials
-2. Navigate to the Dashboard
-3. Click "Clock In" button
-4. Optionally add location or notes (available to all roles)
-5. Confirm clock-in (triggers POST /api/timeentry/clock-in)
+2. Navigate to "Assigned Jobs" dashboard
+3. View list of jobs assigned for the day
+4. Select specific job to work on
+5. Click "Clock In" for that job
+6. Add job site location and any initial notes
+7. Confirm clock-in (triggers POST /api/timeentry/clock-in with job ID)
 ```
 
 #### 2. During Work Hours (Employee Only)
 ```
-- View real-time work duration
+- View real-time work duration for current job
 - Monitor break time accumulation
-- Add notes to current session if needed
-- View current session status (GET /api/timeentry/active)
-- Cannot access other employees' data
+- Add job-specific notes and progress updates
+- View current job details and requirements
+- Cannot access other jobs or employee data
+- Switch between multiple jobs if assigned
 ```
 
-#### 3. Ending Your Work Day (Employee Only)
+#### 3. Ending Work on Jobs (Employee Only)
 ```
-1. Click "Clock Out" button
-2. Add total break time (if not tracked automatically)
-3. Add end-of-day notes
-4. Confirm clock-out (triggers POST /api/timeentry/clock-out)
-5. Review daily summary (personal data only)
+1. Select active job from dashboard
+2. Click "Clock Out" for specific job
+3. Add final break time and completion notes
+4. Mark any job-specific achievements or issues
+5. Confirm clock-out (triggers POST /api/timeentry/clock-out)
+6. View daily summary by job worked
 ```
 
-#### 4. Viewing Your Time Records (Employee Only)
+### 👨‍🔧 Crew Boss Daily Workflow
+**Available Features**: Staff allocation, crew management, job oversight, personal time tracking
+
+#### 1. Job Assignment and Crew Allocation (Crew Boss)
 ```
-1. Access "Time Entries" section (GET /api/timeentry)
-2. Filter by date range (own data only)
-3. View detailed breakdown of personal entries
-4. Generate personal reports (GET /api/timeentry/report)
-5. Cannot access team or organization reports
+1. Login with Crew Boss credentials
+2. View jobs assigned by management
+3. Access available staff pool for allocation
+4. Assign specific employees to jobs:
+   - Match skills with job requirements
+   - Consider employee availability
+   - Optimize crew composition
+5. Set job expectations and deliverables
+6. Communicate job details to assigned staff
+```
+
+#### 2. Crew Monitoring and Management (Crew Boss)
+```
+1. Monitor active jobs and crew performance
+2. Track real-time staff clock-in status by job
+3. Address any issues or delays on job sites
+4. Communicate with clients regarding job progress
+5. Adjust crew assignments as needed
+6. Ensure quality standards and safety compliance
+```
+
+#### 3. Job Completion and Reporting (Crew Boss)
+```
+1. Review completed work and crew performance
+2. Generate job completion reports
+3. Compile crew timesheets for each job
+4. Mark jobs as completed with final notes
+5. Submit reports to management
+6. Prepare timesheet data for client delivery
 ```
 
 ### 👨‍💼 Manager Daily Workflow
-**Available Features**: All Employee features + Team management, organization reports, time entry CRUD operations
+**Available Features**: All previous features + Organization oversight, client communication, email integration
 
-#### 1. Team Monitoring (Manager + Administrator)
+#### 1. Order and Quote Management (Manager + Administrator)
 ```
 1. Login with Manager role
-2. Access "All Employees Report" (GET /api/timeentry/report/all)
-3. Select date range for analysis
-4. Review team attendance patterns for all employees
-5. Identify overtime and attendance issues across organization
-6. Can view any employee's time data
+2. Review new client orders from portal
+3. Assess crew requirements and availability
+4. Generate quotes for client approval:
+   - Calculate crew costs and timeline
+   - Add equipment and material costs
+   - Set profit margins and contingencies
+5. Email quotes directly to clients
+6. Process approved quotes into active jobs
 ```
 
-#### 2. Managing Team Time Entries (Manager + Administrator)
+#### 2. Job and Crew Management (Manager + Administrator)
 ```
-1. Navigate to time entry management interface
-2. Search for specific employee or view all
-3. Create entries for any employee (POST /api/timeentry?userId=...)
-4. Edit existing entries (PUT /api/timeentry/{id})
-5. Delete entries as needed (DELETE /api/timeentry/{id})
-6. Add administrative notes to entries
-7. Update entry status for any employee
+1. Assign crew bosses to approved jobs
+2. Monitor job progress across organization
+3. Track crew allocation and utilization
+4. Address escalated issues from crew bosses
+5. Ensure client satisfaction and project delivery
+6. Manage resource allocation across multiple jobs
 ```
 
-#### 3. Administrative Time Tracking (Manager + Administrator)
+#### 3. Comprehensive Reporting and Client Communication (Manager + Administrator)
 ```
-1. Perform personal time tracking (same as Employee)
-2. Override or correct team member time entries
-3. Handle missed punches and time corrections
-4. Generate comprehensive team reports
-5. Monitor compliance and attendance policies
+1. Generate multi-dimensional reports:
+   - By client (all their jobs and costs)
+   - By job (complete crew time and costs)
+   - By crew boss (performance and efficiency)
+   - By employee (individual performance)
+   - By date range (operational overview)
+2. Email timesheets automatically to clients
+3. Send progress reports and updates
+4. Handle client inquiries and requests
+5. Generate invoicing documentation
 ```
 
 ### 👨‍💻 Administrator System Workflow
 **Available Features**: All Manager features + Full system administration and user management
+
 #### 1. System Overview (Administrator Only)
 ```
 1. Login with Administrator role (admin@oxigin.com)
-2. Access system-wide reports and analytics
-3. Monitor all user activities across organization
-4. Review system performance metrics
-5. Full access to all time tracking data
-6. Can perform any operation available to Manager role
+2. Access system-wide dashboard with:
+   - Active jobs across all clients
+   - Crew utilization metrics
+   - Financial performance indicators
+   - System health and performance metrics
+3. Monitor user activities and system usage
+4. Review and approve system configurations
 ```
 
-#### 2. User Management (Administrator Only)
+#### 2. User and Role Management (Administrator Only)
 ```
-1. Create new user accounts via registration or direct creation
-2. Assign appropriate roles (Employee, Manager, Administrator)
-3. Manage user permissions and access levels
-4. Deactivate/reactivate user accounts
-5. Modify user profile information
-6. Reset passwords and manage security settings
+1. Create and manage user accounts:
+   - Client accounts with portal access
+   - Employee accounts with job assignments
+   - Crew boss accounts with allocation rights
+   - Manager accounts with oversight capabilities
+2. Configure role-based permissions
+3. Manage user deactivation and security settings
+4. Set up email configurations and templates
 ```
 
-#### 3. System Administration (Administrator Only)
+#### 3. System Administration and Integration (Administrator Only)
 ```
-1. Configure system-wide settings
+1. Configure email integration settings
 2. Manage database operations and maintenance
-3. Monitor system logs and security events
-4. Backup and recovery operations
-5. Integration management with external systems
-6. Audit trail monitoring and compliance reporting
+3. Set up automated reporting schedules
+4. Configure client portal settings
+5. Monitor system security and compliance
+6. Backup and recovery operations
+7. Integration management with external systems
 ```
 
 ## 📚 API Documentation
@@ -392,14 +475,15 @@ The system comes pre-configured with demo accounts for testing each role:
   "employeeId": "EMP002",
   "department": "Marketing",
   "jobTitle": "Marketing Specialist",
-  "hireDate": "2024-01-01"
+  "hireDate": "2024-01-01",
+  "role": "Employee"
 }
 ```
 
 #### GET /api/auth/me
 **Purpose**: Get current user information  
 **Authorization**: Bearer token required  
-**Available to**: Employee, Manager, Administrator
+**Available to**: Client, Employee, Crew Boss, Manager, Administrator
 
 **Response**:
 ```json
@@ -417,18 +501,137 @@ The system comes pre-configured with demo accounts for testing each role:
 }
 ```
 
-### Time Entry Endpoints
+### Client Portal Endpoints
 
-#### POST /api/timeentry/clock-in
-**Purpose**: Start a new time entry (clock in)  
+#### POST /api/orders
+**Purpose**: Create new job order  
 **Authorization**: Bearer token required  
-**Available to**: Employee, Manager, Administrator
+**Available to**: Client only
 
 **Request Body**:
 ```json
 {
-  "notes": "Starting work on project Alpha",
-  "location": "Office - Desk 15"
+  "siteName": "Downtown Event Center",
+  "siteAddress": "123 Main St, City, State 12345",
+  "eventName": "Annual Corporate Conference",
+  "purchaseOrderNumber": "PO-2024-001",
+  "startDate": "2024-02-15T08:00:00Z",
+  "endDate": "2024-02-15T18:00:00Z",
+  "crewMembersRequired": 5,
+  "specialRequirements": "AV setup and breakdown required",
+  "estimatedHours": 12
+}
+```
+
+**Response**:
+```json
+{
+  "id": 456,
+  "orderNumber": "ORD-2024-001",
+  "clientId": "client-id",
+  "status": "Pending",
+  "siteName": "Downtown Event Center",
+  "eventName": "Annual Corporate Conference",
+  "purchaseOrderNumber": "PO-2024-001",
+  "startDate": "2024-02-15T08:00:00Z",
+  "endDate": "2024-02-15T18:00:00Z",
+  "createdAt": "2024-01-01T10:00:00Z"
+}
+```
+
+#### POST /api/quotes/request
+**Purpose**: Request quote for specific order  
+**Authorization**: Bearer token required  
+**Available to**: Client only
+
+#### GET /api/orders
+**Purpose**: Get client's orders  
+**Authorization**: Bearer token required  
+**Available to**: Client (own orders), Manager, Administrator (all orders)
+
+#### PUT /api/quotes/{id}/approve
+**Purpose**: Approve or reject a quote  
+**Authorization**: Bearer token required  
+**Available to**: Client only
+
+**Request Body**:
+```json
+{
+  "approved": true,
+  "clientNotes": "Approved for execution"
+}
+```
+
+### Job Management Endpoints
+
+#### GET /api/jobs/assigned
+**Purpose**: Get jobs assigned to current user  
+**Authorization**: Bearer token required  
+**Available to**: Employee, Crew Boss, Manager, Administrator
+
+**Response**:
+```json
+[
+  {
+    "id": 789,
+    "orderNumber": "ORD-2024-001",
+    "jobNumber": "JOB-2024-001", 
+    "siteName": "Downtown Event Center",
+    "eventName": "Annual Corporate Conference",
+    "startDate": "2024-02-15T08:00:00Z",
+    "endDate": "2024-02-15T18:00:00Z",
+    "status": "Active",
+    "crewBossId": "crewboss-id",
+    "assignedStaff": ["emp-id-1", "emp-id-2"],
+    "clientName": "ABC Corporation"
+  }
+]
+```
+
+#### POST /api/jobs/{id}/allocate-staff
+**Purpose**: Allocate staff to specific job  
+**Authorization**: Bearer token required  
+**Available to**: Crew Boss, Manager, Administrator
+
+**Request Body**:
+```json
+{
+  "employeeIds": ["emp-id-1", "emp-id-2", "emp-id-3"],
+  "allocationNotes": "Team allocated for full event setup"
+}
+```
+
+#### PUT /api/jobs/{id}/status
+**Purpose**: Update job status  
+**Authorization**: Bearer token required  
+**Available to**: Crew Boss, Manager, Administrator
+
+**Request Body**:
+```json
+{
+  "status": "Completed",
+  "completionNotes": "Event successfully completed, client satisfied"
+}
+```
+
+#### GET /api/jobs/all
+**Purpose**: Get all jobs in organization  
+**Authorization**: Bearer token required  
+**Available to**: Manager, Administrator only
+
+### Time Entry Endpoints
+
+#### POST /api/timeentry/clock-in
+**Purpose**: Start a new time entry (clock in) for specific job  
+**Authorization**: Bearer token required  
+**Available to**: Employee, Crew Boss, Manager, Administrator
+
+**Request Body**:
+```json
+{
+  "jobId": 789,
+  "notes": "Starting event setup",
+  "location": "Downtown Event Center - Main Hall"
 }
 ```
 
@@ -437,158 +640,173 @@ The system comes pre-configured with demo accounts for testing each role:
 {
   "id": 123,
   "userId": "user-id",
-  "clockInTime": "2024-01-01T09:00:00Z",
+  "jobId": 789,
+  "clockInTime": "2024-02-15T08:00:00Z",
   "clockOutTime": null,
   "totalHours": null,
   "breakTime": null,
   "overtimeHours": null,
-  "notes": "Starting work on project Alpha",
-  "location": "Office - Desk 15",
+  "notes": "Starting event setup",
+  "location": "Downtown Event Center - Main Hall",
   "status": 1,
-  "createdAt": "2024-01-01T09:00:00Z",
-  "updatedAt": "2024-01-01T09:00:00Z"
+  "createdAt": "2024-02-15T08:00:00Z",
+  "updatedAt": "2024-02-15T08:00:00Z"
 }
 ```
 
 #### POST /api/timeentry/clock-out
 **Purpose**: End current time entry (clock out)  
 **Authorization**: Bearer token required  
-**Available to**: Employee, Manager, Administrator
+**Available to**: Employee, Crew Boss, Manager, Administrator
 
 **Request Body**:
 ```json
 {
   "timeEntryId": 123,
-  "notes": "Completed daily tasks",
+  "notes": "Event setup completed successfully",
   "breakTime": "01:00:00"
-}
-```
-
-**Response**:
-```json
-{
-  "id": 123,
-  "userId": "user-id",
-  "clockInTime": "2024-01-01T09:00:00Z",
-  "clockOutTime": "2024-01-01T17:30:00Z",
-  "totalHours": "08:30:00",
-  "breakTime": "01:00:00",
-  "overtimeHours": "00:30:00",
-  "notes": "Completed daily tasks",
-  "location": "Office - Desk 15",
-  "status": 2,
-  "createdAt": "2024-01-01T09:00:00Z",
-  "updatedAt": "2024-01-01T17:30:00Z"
 }
 ```
 
 #### GET /api/timeentry/active
 **Purpose**: Get current active time entry  
 **Authorization**: Bearer token required  
-**Available to**: Employee, Manager, Administrator
-
-**Response** (if active):
-```json
-{
-  "id": 123,
-  "userId": "user-id",
-  "clockInTime": "2024-01-01T09:00:00Z",
-  "clockOutTime": null,
-  "status": 1,
-  "notes": "Starting work on project Alpha",
-  "location": "Office - Desk 15"
-}
-```
-
-**Response** (if no active entry):
-```json
-{
-  "message": "No active time entry found"
-}
-```
+**Available to**: Employee, Crew Boss, Manager, Administrator
 
 #### GET /api/timeentry
 **Purpose**: Get time entries with optional filtering  
 **Authorization**: Bearer token required  
-**Available to**: Employee, Manager, Administrator  
+**Available to**: Employee (own entries), Crew Boss (crew entries), Manager, Administrator (all entries)  
 **Query Parameters**:
 - `startDate` (optional): Filter entries from this date
 - `endDate` (optional): Filter entries to this date
+- `jobId` (optional): Filter by specific job
+- `employeeId` (optional): Filter by specific employee (Manager/Admin only)
 
-**Example Request**: `/api/timeentry?startDate=2024-01-01&endDate=2024-01-31`
+### Advanced Reporting Endpoints
 
-**Response**:
-```json
-[
-  {
-    "id": 123,
-    "userId": "user-id",
-    "clockInTime": "2024-01-01T09:00:00Z",
-    "clockOutTime": "2024-01-01T17:30:00Z",
-    "totalHours": "08:30:00",
-    "breakTime": "01:00:00",
-    "overtimeHours": "00:30:00",
-    "notes": "Completed daily tasks",
-    "location": "Office - Desk 15",
-    "status": 2,
-    "createdAt": "2024-01-01T09:00:00Z",
-    "updatedAt": "2024-01-01T17:30:00Z"
-  }
-]
-```
-
-#### GET /api/timeentry/report
-**Purpose**: Get time report for current user  
+#### GET /api/reports/timesheets/by-client
+**Purpose**: Get timesheets organized by client  
 **Authorization**: Bearer token required  
-**Available to**: Employee, Manager, Administrator  
+**Available to**: Manager, Administrator only
 **Query Parameters**:
+- `clientId` (optional): Specific client
 - `startDate` (required): Report start date
 - `endDate` (required): Report end date
 
 **Response**:
 ```json
 {
-  "userId": "user-id",
-  "user": {
-    "firstName": "John",
-    "lastName": "Doe",
-    "employeeId": "EMP001"
+  "clientId": "client-id",
+  "clientName": "ABC Corporation",
+  "reportPeriod": {
+    "startDate": "2024-02-01T00:00:00Z",
+    "endDate": "2024-02-28T23:59:59Z"
   },
-  "startDate": "2024-01-01T00:00:00Z",
-  "endDate": "2024-01-31T23:59:59Z",
-  "totalWorkedHours": "160:00:00",
-  "totalOvertimeHours": "10:00:00",
-  "totalDaysWorked": 22,
-  "timeEntries": [...]
+  "jobs": [
+    {
+      "jobId": 789,
+      "eventName": "Annual Corporate Conference",
+      "totalHours": "48:30:00",
+      "totalCost": 2425.00,
+      "crew": [
+        {
+          "employeeName": "John Doe",
+          "role": "Crew Boss",
+          "hoursWorked": "12:00:00",
+          "overtimeHours": "4:00:00"
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "totalJobs": 1,
+    "totalHours": "48:30:00",
+    "totalCost": 2425.00
+  }
 }
 ```
 
-#### GET /api/timeentry/report/all
-**Purpose**: Get time reports for all employees  
+#### GET /api/reports/timesheets/by-job
+**Purpose**: Get timesheets organized by job  
 **Authorization**: Bearer token required  
-**Available to**: Manager, Administrator only  
-**Query Parameters**:
-- `startDate` (required): Report start date
-- `endDate` (required): Report end date
+**Available to**: Crew Boss (assigned jobs), Manager, Administrator
+
+#### GET /api/reports/timesheets/by-crewboss
+**Purpose**: Get timesheets organized by crew boss  
+**Authorization**: Bearer token required  
+**Available to**: Manager, Administrator only
+
+#### GET /api/reports/timesheets/by-employee
+**Purpose**: Get timesheets for specific employee  
+**Authorization**: Bearer token required  
+**Available to**: Employee (own data), Crew Boss (crew data), Manager, Administrator
+
+### Email Integration Endpoints
+
+#### POST /api/email/timesheet
+**Purpose**: Email timesheet to client  
+**Authorization**: Bearer token required  
+**Available to**: Manager, Administrator only
+
+**Request Body**:
+```json
+{
+  "clientId": "client-id",
+  "jobId": 789,
+  "reportType": "job", // "job", "client", "daterange"
+  "startDate": "2024-02-15T00:00:00Z",
+  "endDate": "2024-02-15T23:59:59Z",
+  "includeDetails": true,
+  "customMessage": "Please find attached timesheet for your recent event."
+}
+```
+
+**Response**:
+```json
+{
+  "emailSent": true,
+  "recipientEmail": "client@company.com",
+  "subject": "Timesheet for Annual Corporate Conference - ORD-2024-001",
+  "sentAt": "2024-02-16T09:00:00Z",
+  "attachmentGenerated": true
+}
+```
+
+#### POST /api/email/quote
+**Purpose**: Email quote to client  
+**Authorization**: Bearer token required  
+**Available to**: Manager, Administrator only
+
+**Request Body**:
+```json
+{
+  "orderId": 456,
+  "quoteAmount": 2500.00,
+  "validUntil": "2024-02-01T23:59:59Z",
+  "customMessage": "Please find your requested quote attached.",
+  "includeTerms": true
+}
+```
 
 ### Administrative Endpoints
 
 #### GET /api/timeentry/{id}
 **Purpose**: Get specific time entry by ID  
 **Authorization**: Bearer token required  
-**Available to**: Employee (own entries), Manager, Administrator (any entry)
+**Available to**: Employee (own entries), Crew Boss (crew entries), Manager, Administrator (any entry)
 
 #### POST /api/timeentry
 **Purpose**: Create time entry for any employee  
 **Authorization**: Bearer token required  
-**Available to**: Manager, Administrator only  
+**Available to**: Crew Boss (crew members), Manager, Administrator only  
 **Query Parameters**:
 - `userId` (optional): Target user ID (if not provided, creates for current user)
 
 #### PUT /api/timeentry/{id}
 **Purpose**: Update existing time entry  
 **Authorization**: Bearer token required  
-**Available to**: Manager, Administrator only
+**Available to**: Crew Boss (crew entries), Manager, Administrator only
 
 #### DELETE /api/timeentry/{id}
 **Purpose**: Delete time entry  
@@ -609,22 +827,159 @@ public class ApplicationUser : IdentityUser
     public string JobTitle { get; set; }          // Job position
     public DateTime HireDate { get; set; }        // Employment start date
     public bool IsActive { get; set; }            // Account status
+    public string? CompanyName { get; set; }      // For client users
+    public string? ContactPhone { get; set; }    // Contact information
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     
     // Navigation properties
     public virtual ICollection<TimeEntry> TimeEntries { get; set; }
+    public virtual ICollection<JobOrder> ClientOrders { get; set; }          // For clients
+    public virtual ICollection<Job> AssignedJobs { get; set; }               // For employees
+    public virtual ICollection<Job> ManagedJobs { get; set; }                // For crew bosses
     public virtual ICollection<LeaveRequest> LeaveRequests { get; set; }
 }
 ```
 
-### TimeEntry
-**Purpose**: Track individual work sessions and time data
+### JobOrder
+**Purpose**: Store client job orders and requests
+```csharp
+public class JobOrder
+{
+    public int Id { get; set; }
+    public string OrderNumber { get; set; }        // Auto-generated order number
+    public string ClientId { get; set; }           // Foreign key to ApplicationUser (Client)
+    public string SiteName { get; set; }           // Event site name
+    public string SiteAddress { get; set; }        // Event site address
+    public string EventName { get; set; }          // Name of the event
+    public string PurchaseOrderNumber { get; set; } // Client's PO number
+    public DateTime StartDate { get; set; }        // Event start date/time
+    public DateTime EndDate { get; set; }          // Event end date/time
+    public int CrewMembersRequired { get; set; }   // Number of crew needed
+    public string? SpecialRequirements { get; set; } // Special notes/requirements
+    public decimal? EstimatedHours { get; set; }   // Estimated total hours
+    public OrderStatus Status { get; set; }        // Pending, Quoted, Approved, Completed, Cancelled
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    
+    // Navigation properties
+    public virtual ApplicationUser Client { get; set; }
+    public virtual ICollection<Quote> Quotes { get; set; }
+    public virtual Job? Job { get; set; }           // Created job if order approved
+}
+
+public enum OrderStatus
+{
+    Pending = 1,        // Order submitted, awaiting quote
+    Quoted = 2,         // Quote generated and sent to client
+    Approved = 3,       // Quote approved by client
+    InProgress = 4,     // Job is active
+    Completed = 5,      // Job completed successfully
+    Cancelled = 6       // Order cancelled
+}
+```
+
+### Quote
+**Purpose**: Store quotes for job orders
+```csharp
+public class Quote
+{
+    public int Id { get; set; }
+    public string QuoteNumber { get; set; }        // Auto-generated quote number
+    public int JobOrderId { get; set; }            // Foreign key to JobOrder
+    public decimal Amount { get; set; }            // Quoted amount
+    public string? Description { get; set; }       // Quote details and breakdown
+    public DateTime ValidUntil { get; set; }       // Quote expiration date
+    public QuoteStatus Status { get; set; }        // Draft, Sent, Approved, Rejected, Expired
+    public string? ClientNotes { get; set; }       // Client feedback on quote
+    public string? CreatedByUserId { get; set; }   // Manager who created quote
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    
+    // Navigation properties
+    public virtual JobOrder JobOrder { get; set; }
+    public virtual ApplicationUser CreatedBy { get; set; }
+}
+
+public enum QuoteStatus
+{
+    Draft = 1,          // Quote being prepared
+    Sent = 2,          // Quote sent to client
+    Approved = 3,      // Client approved quote
+    Rejected = 4,      // Client rejected quote
+    Expired = 5        // Quote expired
+}
+```
+
+### Job
+**Purpose**: Store active jobs created from approved orders
+```csharp
+public class Job
+{
+    public int Id { get; set; }
+    public string JobNumber { get; set; }           // Auto-generated job number
+    public int JobOrderId { get; set; }             // Foreign key to JobOrder
+    public string? CrewBossId { get; set; }         // Assigned crew boss
+    public JobStatus Status { get; set; }           // Assigned, InProgress, Completed, Cancelled
+    public DateTime? ActualStartTime { get; set; }  // Actual job start time
+    public DateTime? ActualEndTime { get; set; }    // Actual job completion time
+    public string? CompletionNotes { get; set; }    // Final job notes
+    public DateTime CreatedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    
+    // Navigation properties
+    public virtual JobOrder JobOrder { get; set; }
+    public virtual ApplicationUser? CrewBoss { get; set; }
+    public virtual ICollection<JobAssignment> StaffAssignments { get; set; }
+    public virtual ICollection<TimeEntry> TimeEntries { get; set; }
+}
+
+public enum JobStatus
+{
+    Assigned = 1,       // Job assigned to crew boss
+    InProgress = 2,     // Job is active
+    Completed = 3,      // Job completed successfully
+    Cancelled = 4       // Job cancelled
+}
+```
+
+### JobAssignment
+**Purpose**: Track staff assignments to specific jobs
+```csharp
+public class JobAssignment
+{
+    public int Id { get; set; }
+    public int JobId { get; set; }                  // Foreign key to Job
+    public string EmployeeId { get; set; }          // Foreign key to ApplicationUser (Employee)
+    public string? AssignedByUserId { get; set; }   // Crew boss who made assignment
+    public AssignmentStatus Status { get; set; }    // Assigned, Active, Completed, Cancelled
+    public string? AssignmentNotes { get; set; }    // Assignment specific notes
+    public DateTime AssignedAt { get; set; }
+    public DateTime UpdatedAt { get; set; }
+    
+    // Navigation properties
+    public virtual Job Job { get; set; }
+    public virtual ApplicationUser Employee { get; set; }
+    public virtual ApplicationUser AssignedBy { get; set; }
+}
+
+public enum AssignmentStatus
+{
+    Assigned = 1,       // Employee assigned to job
+    Active = 2,         // Employee currently working on job
+    Completed = 3,      // Assignment completed
+    Cancelled = 4       // Assignment cancelled
+}
+```
+
+### TimeEntry (Updated)
+**Purpose**: Track individual work sessions and time data linked to jobs
 ```csharp
 public class TimeEntry
 {
     public int Id { get; set; }
     public string UserId { get; set; }           // Foreign key to ApplicationUser
+    public int? JobId { get; set; }              // Foreign key to Job (optional for non-job time)
     public DateTime ClockInTime { get; set; }    // Work session start time
     public DateTime? ClockOutTime { get; set; }  // Work session end time (null if active)
     public TimeSpan? TotalHours { get; set; }    // Calculated total work hours
@@ -636,8 +991,9 @@ public class TimeEntry
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     
-    // Navigation property
+    // Navigation properties
     public virtual ApplicationUser User { get; set; }
+    public virtual Job? Job { get; set; }        // Optional job reference
 }
 
 public enum TimeEntryStatus
@@ -648,7 +1004,50 @@ public enum TimeEntryStatus
 }
 ```
 
-### LeaveRequest (Model created, API endpoints planned)
+### EmailLog
+**Purpose**: Track email communications with clients
+```csharp
+public class EmailLog
+{
+    public int Id { get; set; }
+    public string RecipientEmail { get; set; }      // Client email address
+    public string Subject { get; set; }             // Email subject line
+    public EmailType Type { get; set; }             // Timesheet, Quote, Report, etc.
+    public int? JobId { get; set; }                 // Related job (if applicable)
+    public int? JobOrderId { get; set; }            // Related order (if applicable)
+    public int? QuoteId { get; set; }               // Related quote (if applicable)
+    public string? AttachmentPath { get; set; }     // Path to generated attachment
+    public EmailStatus Status { get; set; }         // Sent, Failed, Pending
+    public string? ErrorMessage { get; set; }       // Error details if failed
+    public string SentByUserId { get; set; }        // User who triggered email
+    public DateTime CreatedAt { get; set; }
+    
+    // Navigation properties
+    public virtual Job? Job { get; set; }
+    public virtual JobOrder? JobOrder { get; set; }
+    public virtual Quote? Quote { get; set; }
+    public virtual ApplicationUser SentBy { get; set; }
+}
+
+public enum EmailType
+{
+    Timesheet = 1,      // Timesheet delivery
+    Quote = 2,          // Quote delivery
+    OrderConfirmation = 3, // Order confirmation
+    JobCompletion = 4,  // Job completion notice
+    Report = 5          // Custom reports
+}
+
+public enum EmailStatus
+{
+    Pending = 1,        // Email queued for sending
+    Sent = 2,          // Successfully sent
+    Failed = 3,        // Failed to send
+    Retrying = 4       // Retry in progress
+}
+```
+
+### LeaveRequest (Enhanced)
 **Purpose**: Manage employee leave requests and approvals
 ```csharp
 public class LeaveRequest
@@ -664,6 +1063,7 @@ public class LeaveRequest
     public string? ApprovedByUserId { get; set; } // Manager/Admin who approved
     public DateTime? ApprovedAt { get; set; }    // Approval timestamp
     public string? RejectionReason { get; set; } // Reason for rejection
+    public bool AffectsJobAssignments { get; set; } // Whether to check job conflicts
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
     
@@ -692,15 +1092,27 @@ public enum LeaveStatus
 ```
 
 ### Database Relationships
+- **ApplicationUser** → **JobOrders** (One-to-Many, as Client)
 - **ApplicationUser** → **TimeEntries** (One-to-Many)
-- **ApplicationUser** → **LeaveRequests** (One-to-Many)  
-- **ApplicationUser** → **ApprovedLeaveRequests** (One-to-Many, as approver)
+- **ApplicationUser** → **JobAssignments** (One-to-Many, as Employee)
+- **ApplicationUser** → **Jobs** (One-to-Many, as CrewBoss)
+- **ApplicationUser** → **LeaveRequests** (One-to-Many)
+- **JobOrder** → **Quotes** (One-to-Many)
+- **JobOrder** → **Job** (One-to-One)
+- **Job** → **JobAssignments** (One-to-Many)
+- **Job** → **TimeEntries** (One-to-Many)
+- **Quote** → **EmailLogs** (One-to-Many)
+- **Job** → **EmailLogs** (One-to-Many)
 
 ### Key Business Rules
 - **Overtime Calculation**: Automatic overtime when daily hours exceed 8 hours
-- **Single Active Session**: Users can only have one active TimeEntry at a time
+- **Single Active Session**: Users can only have one active TimeEntry at a time per job
 - **Time Validation**: ClockOutTime must be after ClockInTime
 - **Role Permissions**: Only Managers/Admins can modify other users' time entries
+- **Job Assignment**: Employees can only be assigned to jobs by Crew Bosses or higher
+- **Client Orders**: Only clients can create job orders in their portal
+- **Quote Approval**: Only the ordering client can approve their quotes
+- **Email Tracking**: All client communications are logged for audit purposes
 
 ## 🚀 Getting Started
 
