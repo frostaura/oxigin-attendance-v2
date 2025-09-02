@@ -67,7 +67,13 @@ The system implements five distinct user roles with specific permissions and cap
 **Core Capabilities**: Order placement, quote management, and receiving reports
 
 #### Available Features:
-- **✅ Job Order Placement**: Submit orders for crew/staff with site details, event names, and purchase order numbers
+- **✅ Advanced Job Order Placement**: 
+  - Calendar-based date range selection for multi-day events
+  - Day-by-day crew requirements specification
+  - Employee type selection per date (different roles/skills)
+  - Quantity specification per employee type per date
+  - Flexible shift duration in 2-hour increments
+  - Precise on-site arrival time configuration
 - **✅ Quote Requests**: Request quotes for specific events and crew requirements
 - **✅ Order Tracking**: Monitor status of submitted orders and quotes
 - **✅ Quote Approval**: Review and approve/reject quotes for ordered services
@@ -75,12 +81,23 @@ The system implements five distinct user roles with specific permissions and cap
 - **✅ Site Management**: Specify work sites and event details for each order
 - **✅ Order History**: View complete history of orders, quotes, and completed jobs
 
+#### Order Placement Workflow:
+1. **Date Selection**: Choose start and end dates from calendar widget
+2. **Daily Requirements**: For each selected date, specify:
+   - **Employee Types**: Select from dropdown (General Labor, AV Technician, Security, etc.)
+   - **Staff Count**: Number of employees needed for each type
+   - **Shift Duration**: Hours required in 2-hour increments (2h, 4h, 6h, 8h, 10h, 12h)
+   - **Arrival Time**: Exact time crew should be on-site
+3. **Event Details**: Add site information, event name, and purchase order
+4. **Submission**: Submit for immediate confirmation or quote request
+
 #### API Access:
 - `POST /api/auth/login` - Authentication
 - `GET /api/auth/me` - View profile
 - `POST /api/orders` - Create new job orders
 - `POST /api/quotes/request` - Request quotes
 - `GET /api/orders` - View own orders
+- `GET /api/orders/employee-types` - Get available employee types for dropdowns
 - `PUT /api/quotes/{id}/approve` - Approve quotes
 - `GET /api/timesheets/client` - View client timesheets
 
@@ -504,7 +521,7 @@ The system comes pre-configured with demo accounts for testing each role:
 ### Client Portal Endpoints
 
 #### POST /api/orders
-**Purpose**: Create new job order  
+**Purpose**: Create new job order with daily crew requirements  
 **Authorization**: Bearer token required  
 **Available to**: Client only
 
@@ -515,11 +532,50 @@ The system comes pre-configured with demo accounts for testing each role:
   "siteAddress": "123 Main St, City, State 12345",
   "eventName": "Annual Corporate Conference",
   "purchaseOrderNumber": "PO-2024-001",
-  "startDate": "2024-02-15T08:00:00Z",
-  "endDate": "2024-02-15T18:00:00Z",
-  "crewMembersRequired": 5,
+  "startDate": "2024-02-15",
+  "endDate": "2024-02-17",
   "specialRequirements": "AV setup and breakdown required",
-  "estimatedHours": 12
+  "dailyRequirements": [
+    {
+      "workDate": "2024-02-15",
+      "employeeType": "GeneralLabor",
+      "numberOfEmployees": 3,
+      "shiftDurationHours": 8,
+      "onSiteTime": "08:00:00",
+      "specialNotes": "Setup day - early arrival"
+    },
+    {
+      "workDate": "2024-02-15",
+      "employeeType": "AVTechnician", 
+      "numberOfEmployees": 2,
+      "shiftDurationHours": 10,
+      "onSiteTime": "07:00:00",
+      "specialNotes": "Pre-event AV setup"
+    },
+    {
+      "workDate": "2024-02-16",
+      "employeeType": "GeneralLabor",
+      "numberOfEmployees": 4,
+      "shiftDurationHours": 6,
+      "onSiteTime": "09:00:00",
+      "specialNotes": "Event day operations"
+    },
+    {
+      "workDate": "2024-02-16",
+      "employeeType": "Security",
+      "numberOfEmployees": 2,
+      "shiftDurationHours": 8,
+      "onSiteTime": "08:30:00"
+    },
+    {
+      "workDate": "2024-02-17",
+      "employeeType": "GeneralLabor",
+      "numberOfEmployees": 2,
+      "shiftDurationHours": 4,
+      "onSiteTime": "10:00:00",
+      "specialNotes": "Breakdown and cleanup"
+    }
+  ]
 }
 ```
 
@@ -528,13 +584,25 @@ The system comes pre-configured with demo accounts for testing each role:
 {
   "id": 456,
   "orderNumber": "ORD-2024-001",
-  "clientId": "client-id",
+  "clientId": "client-id", 
   "status": "Pending",
   "siteName": "Downtown Event Center",
-  "eventName": "Annual Corporate Conference",
+  "eventName": "Annual Corporate Conference", 
   "purchaseOrderNumber": "PO-2024-001",
-  "startDate": "2024-02-15T08:00:00Z",
-  "endDate": "2024-02-15T18:00:00Z",
+  "startDate": "2024-02-15",
+  "endDate": "2024-02-17",
+  "dailyRequirements": [
+    {
+      "id": 1,
+      "workDate": "2024-02-15",
+      "employeeType": "GeneralLabor",
+      "numberOfEmployees": 3,
+      "shiftDurationHours": 8,
+      "onSiteTime": "08:00:00",
+      "specialNotes": "Setup day - early arrival"
+    }
+    // ... additional daily requirements
+  ],
   "createdAt": "2024-01-01T10:00:00Z"
 }
 ```
@@ -543,6 +611,37 @@ The system comes pre-configured with demo accounts for testing each role:
 **Purpose**: Request quote for specific order  
 **Authorization**: Bearer token required  
 **Available to**: Client only
+
+#### GET /api/orders/employee-types
+**Purpose**: Get available employee types and shift duration options for order placement  
+**Authorization**: Bearer token required  
+**Available to**: Client only
+
+**Response**:
+```json
+{
+  "employeeTypes": [
+    { "value": "GeneralLabor", "label": "General Labor", "description": "General construction and event labor" },
+    { "value": "AVTechnician", "label": "AV Technician", "description": "Audio/Visual equipment specialists" },
+    { "value": "Security", "label": "Security Personnel", "description": "Licensed security guards" },
+    { "value": "Supervisor", "label": "Site Supervisor", "description": "On-site team leaders and supervisors" },
+    { "value": "Electrician", "label": "Electrician", "description": "Licensed electrical technicians" },
+    { "value": "Carpenter", "label": "Carpenter", "description": "Skilled carpentry and construction" },
+    { "value": "Driver", "label": "Driver", "description": "Equipment and delivery drivers" },
+    { "value": "Coordinator", "label": "Event Coordinator", "description": "Event planning and coordination" },
+    { "value": "Cleaner", "label": "Cleaning Staff", "description": "Professional cleaning services" },
+    { "value": "Catering", "label": "Catering Staff", "description": "Food service and catering" }
+  ],
+  "shiftDurations": [
+    { "value": 2, "label": "2 Hours" },
+    { "value": 4, "label": "4 Hours" },
+    { "value": 6, "label": "6 Hours" },
+    { "value": 8, "label": "8 Hours (Standard)" },
+    { "value": 10, "label": "10 Hours" },
+    { "value": 12, "label": "12 Hours" }
+  ]
+}
+```
 
 #### GET /api/orders
 **Purpose**: Get client's orders  
@@ -853,11 +952,9 @@ public class JobOrder
     public string SiteAddress { get; set; }        // Event site address
     public string EventName { get; set; }          // Name of the event
     public string PurchaseOrderNumber { get; set; } // Client's PO number
-    public DateTime StartDate { get; set; }        // Event start date/time
-    public DateTime EndDate { get; set; }          // Event end date/time
-    public int CrewMembersRequired { get; set; }   // Number of crew needed
+    public DateTime StartDate { get; set; }        // Event start date
+    public DateTime EndDate { get; set; }          // Event end date
     public string? SpecialRequirements { get; set; } // Special notes/requirements
-    public decimal? EstimatedHours { get; set; }   // Estimated total hours
     public OrderStatus Status { get; set; }        // Pending, Quoted, Approved, Completed, Cancelled
     public DateTime CreatedAt { get; set; }
     public DateTime UpdatedAt { get; set; }
@@ -865,6 +962,7 @@ public class JobOrder
     // Navigation properties
     public virtual ApplicationUser Client { get; set; }
     public virtual ICollection<Quote> Quotes { get; set; }
+    public virtual ICollection<DailyCrewRequirement> DailyRequirements { get; set; }
     public virtual Job? Job { get; set; }           // Created job if order approved
 }
 
@@ -876,6 +974,50 @@ public enum OrderStatus
     InProgress = 4,     // Job is active
     Completed = 5,      // Job completed successfully
     Cancelled = 6       // Order cancelled
+}
+```
+
+### DailyCrewRequirement
+**Purpose**: Store daily crew requirements for each date in a job order
+```csharp
+public class DailyCrewRequirement
+{
+    public int Id { get; set; }
+    public int JobOrderId { get; set; }            // Foreign key to JobOrder
+    public DateTime WorkDate { get; set; }         // Specific date for this requirement
+    public string EmployeeType { get; set; }       // Type of employee (General Labor, AV Tech, Security, etc.)
+    public int NumberOfEmployees { get; set; }     // Number of employees needed
+    public int ShiftDurationHours { get; set; }    // Duration in 2-hour increments (2, 4, 6, 8, 10, 12)
+    public TimeSpan OnSiteTime { get; set; }       // Time employees should arrive on site
+    public string? SpecialNotes { get; set; }      // Additional notes for this requirement
+    public DateTime CreatedAt { get; set; }
+    
+    // Navigation properties
+    public virtual JobOrder JobOrder { get; set; }
+}
+
+public enum EmployeeType
+{
+    GeneralLabor = 1,       // General laborers
+    AVTechnician = 2,       // Audio/Visual technicians
+    Security = 3,           // Security personnel
+    Supervisor = 4,         // Site supervisors
+    Electrician = 5,        // Licensed electricians
+    Carpenter = 6,          // Carpenters
+    Driver = 7,             // Equipment/delivery drivers
+    Coordinator = 8,        // Event coordinators
+    Cleaner = 9,           // Cleaning staff
+    Catering = 10          // Catering staff
+}
+
+public enum ShiftDuration
+{
+    TwoHours = 2,          // 2-hour shift
+    FourHours = 4,         // 4-hour shift
+    SixHours = 6,          // 6-hour shift
+    EightHours = 8,        // 8-hour shift (standard)
+    TenHours = 10,         // 10-hour shift
+    TwelveHours = 12       // 12-hour shift
 }
 ```
 
@@ -1098,6 +1240,7 @@ public enum LeaveStatus
 - **ApplicationUser** → **Jobs** (One-to-Many, as CrewBoss)
 - **ApplicationUser** → **LeaveRequests** (One-to-Many)
 - **JobOrder** → **Quotes** (One-to-Many)
+- **JobOrder** → **DailyCrewRequirements** (One-to-Many)
 - **JobOrder** → **Job** (One-to-One)
 - **Job** → **JobAssignments** (One-to-Many)
 - **Job** → **TimeEntries** (One-to-Many)
