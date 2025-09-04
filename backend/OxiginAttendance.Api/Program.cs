@@ -162,6 +162,9 @@ using (var scope = app.Services.CreateScope())
         
         // Seed default users for all user types
         await SeedDefaultUsersAsync(userManager);
+        
+        // Seed service items
+        await SeedServiceItemsAsync(context);
     }
     catch (Exception ex)
     {
@@ -266,4 +269,32 @@ async Task SeedDefaultUsersAsync(UserManager<ApplicationUser> userManager)
         await userManager.CreateAsync(employeeUser, "Employee@123");
         await userManager.AddToRoleAsync(employeeUser, "Employee");
     }
+}
+
+async Task SeedServiceItemsAsync(ApplicationDbContext context)
+{
+    // Check if service items already exist
+    if (context.ServiceItems.Any())
+    {
+        return; // Already seeded
+    }
+
+    var serviceItems = new List<ServiceItem>
+    {
+        // Shift hours service items (6, 8, 10, 12, 14, 16 hours)
+        new ServiceItem { Name = "6 Hour Shift", Type = ServiceItemType.ShiftHours, BasePrice = 240, BaseCost = 180, ShiftHours = 6, IsActive = true },
+        new ServiceItem { Name = "8 Hour Shift", Type = ServiceItemType.ShiftHours, BasePrice = 320, BaseCost = 240, ShiftHours = 8, IsActive = true },
+        new ServiceItem { Name = "10 Hour Shift", Type = ServiceItemType.ShiftHours, BasePrice = 400, BaseCost = 300, ShiftHours = 10, IsActive = true },
+        new ServiceItem { Name = "12 Hour Shift", Type = ServiceItemType.ShiftHours, BasePrice = 480, BaseCost = 360, ShiftHours = 12, IsActive = true },
+        new ServiceItem { Name = "14 Hour Shift", Type = ServiceItemType.ShiftHours, BasePrice = 560, BaseCost = 420, ShiftHours = 14, IsActive = true },
+        new ServiceItem { Name = "16 Hour Shift", Type = ServiceItemType.ShiftHours, BasePrice = 640, BaseCost = 480, ShiftHours = 16, IsActive = true },
+        
+        // Permanent staff rates
+        new ServiceItem { Name = "Normal Time", Type = ServiceItemType.NormalTime, BasePrice = 40, BaseCost = 30, IsActive = true },
+        new ServiceItem { Name = "Overtime", Type = ServiceItemType.Overtime, BasePrice = 60, BaseCost = 45, IsActive = true },
+        new ServiceItem { Name = "Double Time", Type = ServiceItemType.DoubleTime, BasePrice = 80, BaseCost = 60, IsActive = true }
+    };
+
+    context.ServiceItems.AddRange(serviceItems);
+    await context.SaveChangesAsync();
 }
