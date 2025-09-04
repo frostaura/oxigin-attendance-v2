@@ -73,6 +73,7 @@ builder.Services.AddScoped<IEmployeeRateService, EmployeeRateService>();
 builder.Services.AddScoped<IServiceItemService, ServiceItemService>();
 builder.Services.AddScoped<IFileUploadService, FileUploadService>();
 builder.Services.AddScoped<IEnhancedCheckInService, EnhancedCheckInService>();
+builder.Services.AddScoped<IBulkEmployeeService, BulkEmployeeService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
