@@ -71,6 +71,8 @@ builder.Services.AddScoped<IQuoteService, QuoteService>();
 builder.Services.AddScoped<IInvoiceService, InvoiceService>();
 builder.Services.AddScoped<IEmployeeRateService, EmployeeRateService>();
 builder.Services.AddScoped<IServiceItemService, ServiceItemService>();
+builder.Services.AddScoped<IFileUploadService, FileUploadService>();
+builder.Services.AddScoped<IEnhancedCheckInService, EnhancedCheckInService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>

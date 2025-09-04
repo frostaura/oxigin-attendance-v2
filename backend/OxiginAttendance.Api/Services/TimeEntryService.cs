@@ -49,6 +49,8 @@ public class TimeEntryService : ITimeEntryService
                 ClockInTime = DateTime.UtcNow,
                 Notes = clockInDto.Notes,
                 Location = clockInDto.Location,
+                LocationCoordinates = clockInDto.LocationCoordinates,
+                JobId = clockInDto.JobId,
                 Status = TimeEntryStatus.Active,
                 CreatedAt = DateTime.UtcNow,
                 UpdatedAt = DateTime.UtcNow
@@ -359,11 +361,18 @@ public class TimeEntryService : ITimeEntryService
     {
         try
         {
-            // Load user if not already loaded
+            // Load user and job if not already loaded
             if (timeEntry.User == null)
             {
                 await _context.Entry(timeEntry)
                     .Reference(te => te.User)
+                    .LoadAsync();
+            }
+            
+            if (timeEntry.Job == null && timeEntry.JobId.HasValue)
+            {
+                await _context.Entry(timeEntry)
+                    .Reference(te => te.Job)
                     .LoadAsync();
             }
 
@@ -378,6 +387,10 @@ public class TimeEntryService : ITimeEntryService
                 OvertimeHours = timeEntry.OvertimeHours,
                 Notes = timeEntry.Notes,
                 Location = timeEntry.Location,
+                PhotoPath = timeEntry.PhotoPath,
+                LocationCoordinates = timeEntry.LocationCoordinates,
+                FacialRecognitionVerified = timeEntry.FacialRecognitionVerified,
+                JobId = timeEntry.JobId,
                 Status = timeEntry.Status,
                 CreatedAt = timeEntry.CreatedAt,
                 UpdatedAt = timeEntry.UpdatedAt,
@@ -390,6 +403,18 @@ public class TimeEntryService : ITimeEntryService
                     EmployeeId = timeEntry.User.EmployeeId,
                     Department = timeEntry.User.Department,
                     JobTitle = timeEntry.User.JobTitle
+                } : null,
+                Job = timeEntry.Job != null ? new JobDto
+                {
+                    Id = timeEntry.Job.Id,
+                    JobNumber = timeEntry.Job.JobNumber,
+                    JobOrderId = timeEntry.Job.JobOrderId,
+                    CrewBossId = timeEntry.Job.CrewBossId,
+                    Status = timeEntry.Job.Status.ToString(),
+                    ActualStartTime = timeEntry.Job.ActualStartTime,
+                    ActualEndTime = timeEntry.Job.ActualEndTime,
+                    CompletionNotes = timeEntry.Job.CompletionNotes,
+                    CreatedAt = timeEntry.Job.CreatedAt
                 } : null
             };
         }
