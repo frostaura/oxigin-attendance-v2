@@ -12,11 +12,16 @@ namespace OxiginAttendance.Api.Controllers;
 public class TimeEntryController : ControllerBase
 {
     private readonly ITimeEntryService _timeEntryService;
+    private readonly IEnhancedCheckInService _enhancedCheckInService;
     private readonly ILogger<TimeEntryController> _logger;
 
-    public TimeEntryController(ITimeEntryService timeEntryService, ILogger<TimeEntryController> logger)
+    public TimeEntryController(
+        ITimeEntryService timeEntryService, 
+        IEnhancedCheckInService enhancedCheckInService,
+        ILogger<TimeEntryController> logger)
     {
         _timeEntryService = timeEntryService;
+        _enhancedCheckInService = enhancedCheckInService;
         _logger = logger;
     }
 
@@ -36,6 +41,35 @@ public class TimeEntryController : ControllerBase
         }
 
         return Ok(result);
+    }
+
+    /// <summary>
+    /// Enhanced clock-in with photo, location, and facial recognition
+    /// </summary>
+    [HttpPost("clock-in-enhanced")]
+    public async Task<ActionResult<TimeEntryDto>> ClockInEnhanced([FromForm] ClockInWithPhotoDto clockInDto)
+    {
+        var userId = GetCurrentUserId();
+        if (string.IsNullOrEmpty(userId))
+        {
+            return Unauthorized();
+        }
+
+        try
+        {
+            var result = await _enhancedCheckInService.ClockInWithPhotosAsync(userId, clockInDto);
+            if (result == null)
+            {
+                return BadRequest(new { message = "Unable to clock in. You may already be clocked in or there was an issue processing your photos." });
+            }
+
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error during enhanced clock-in for user {UserId}", userId);
+            return StatusCode(500, new { message = "An error occurred during enhanced clock-in" });
+        }
     }
 
     [HttpPost("clock-out")]
