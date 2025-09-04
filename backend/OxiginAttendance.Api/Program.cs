@@ -67,6 +67,10 @@ builder.Services.AddAuthentication(options =>
 // Add custom services
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<ITimeEntryService, TimeEntryService>();
+builder.Services.AddScoped<IQuoteService, QuoteService>();
+builder.Services.AddScoped<IInvoiceService, InvoiceService>();
+builder.Services.AddScoped<IEmployeeRateService, EmployeeRateService>();
+builder.Services.AddScoped<IServiceItemService, ServiceItemService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>

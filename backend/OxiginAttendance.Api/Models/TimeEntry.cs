@@ -17,6 +17,13 @@ public class TimeEntry
     
     public string? Notes { get; set; }
     public string? Location { get; set; }
+    public string? PhotoPath { get; set; }          // Path to check-in photo
+    public string? LocationCoordinates { get; set; } // GPS coordinates
+    public bool? FacialRecognitionVerified { get; set; }
+    
+    // Job assignment
+    public int? JobId { get; set; }
+    
     public TimeEntryStatus Status { get; set; } = TimeEntryStatus.Active;
     
     public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -24,6 +31,7 @@ public class TimeEntry
 
     // Navigation properties
     public virtual ApplicationUser User { get; set; } = null!;
+    public virtual Job? Job { get; set; }
 }
 
 public enum TimeEntryStatus

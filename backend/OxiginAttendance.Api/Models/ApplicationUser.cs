@@ -17,4 +17,8 @@ public class ApplicationUser : IdentityUser
     // Navigation properties
     public virtual ICollection<TimeEntry> TimeEntries { get; set; } = new List<TimeEntry>();
     public virtual ICollection<LeaveRequest> LeaveRequests { get; set; } = new List<LeaveRequest>();
+    public virtual ICollection<JobOrder> ClientOrders { get; set; } = new List<JobOrder>();
+    public virtual ICollection<JobAssignment> JobAssignments { get; set; } = new List<JobAssignment>();
+    public virtual ICollection<Job> CrewBossJobs { get; set; } = new List<Job>();
+    public virtual ICollection<EmployeeRate> EmployeeRates { get; set; } = new List<EmployeeRate>();
 }
